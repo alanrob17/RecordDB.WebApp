@@ -13,7 +13,7 @@
                 @Model.TotalCount @(Model.TotalCount == 1 ? "artist" : "artists")
             </span>
         </h1>
-        <p class="text-muted mb-0 small">Browse, search, and manage musicians and groups in the RecordDB catalog.</p>
+        <p class="text-muted mb-0 small">Browse, search, and manage musicians and groups in the RecordDB catalogue.</p>
     </div>
     
     <div class="d-flex flex-column flex-sm-row gap-2">
@@ -58,7 +58,7 @@
         <h4 class="fw-semibold">No artists found</h4>
         <p class="text-muted mb-3">
             @(string.IsNullOrWhiteSpace(Model.SearchTerm) 
-                ? "Your artist catalog is currently empty." 
+                ? "Your artist catalogue is currently empty." 
                 : $"No artists matched \"{Model.SearchTerm}\".")
         </p>
         <div>

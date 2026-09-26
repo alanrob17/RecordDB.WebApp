@@ -504,3 +504,97 @@ body {
     color: var(--app-text-muted);
     font-size: 0.875rem;
 }
+
+/* ==========================================================================
+   Statistics View Responsive Styles (Phone, Tablet, PC)
+   ========================================================================== */
+.stats-summary-card {
+    background: var(--app-card-bg);
+    border: 1px solid var(--app-border);
+    border-radius: var(--app-radius);
+    padding: 1.25rem 1rem;
+    box-shadow: var(--app-shadow-sm);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+}
+
+.stats-summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--app-shadow);
+}
+
+.stats-summary-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    margin-bottom: 0.6rem;
+}
+
+.stats-table thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--app-border);
+}
+
+.stats-table-section-header th {
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 0.825rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.7rem 1.25rem !important;
+    border-top: 1px solid var(--app-border);
+    border-bottom: 1px solid var(--app-border);
+}
+
+.stats-table td {
+    padding: 0.7rem 1.25rem;
+    vertical-align: middle;
+    font-size: 0.925rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.stats-table tr:hover:not(.stats-table-section-header) td {
+    background-color: #f8fafc;
+}
+
+.stats-sub-divider td {
+    border-bottom: 1px solid var(--app-border) !important;
+}
+
+.stats-value-badge {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+    display: inline-block;
+    min-width: 42px;
+    text-align: center;
+}
+
+@media (max-width: 576px) {
+    .stats-table thead th,
+    .stats-table-section-header th,
+    .stats-table td {
+        padding: 0.6rem 0.85rem !important;
+        font-size: 0.875rem;
+    }
+
+    .stats-summary-card {
+        padding: 1rem 0.75rem;
+    }
+}

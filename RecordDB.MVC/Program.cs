@@ -24,6 +24,9 @@ builder.Services.AddHttpClient<IDiscService, DiscService>(client =>
 builder.Services.AddHttpClient<ITrackService, TrackService>(client =>
     client.BaseAddress = apiBase);
 
+builder.Services.AddHttpClient<IStatisticService, StatisticService>(client =>
+    client.BaseAddress = apiBase);
+
 // -----------------------------------------------------------------------
 // Pipeline
 // -----------------------------------------------------------------------
