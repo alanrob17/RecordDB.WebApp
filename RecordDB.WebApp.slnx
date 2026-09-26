@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="RecordDB.API/RecordDB.API.csproj" />
+  <Project Path="RecordDB.MVC/RecordDB.MVC.csproj" />
+  <Project Path="RecordDB.Shared/RecordDB.Shared.csproj" />
+</Solution>

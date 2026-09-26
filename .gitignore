@@ -1,0 +1,35 @@
+## Ignore Visual Studio temporary files, build results, and user-specific files.
+
+# Build Folders
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+# Visual Studio Cache & Options
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+# User-specific files
+*.userprefs
+*.mono
+*.keystore
+
+# Publish output
+publish/
+
+# Rider / IntelliJ Rider
+.idea/
+*.sln.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# User Requested: Ignore appsettings.json
+appsettings.json
+appsettings.Development.json
+logs/
+*.bak

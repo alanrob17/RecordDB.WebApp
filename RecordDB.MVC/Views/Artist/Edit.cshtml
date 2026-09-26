@@ -1,0 +1,92 @@
+@model RecordDB.Shared.DTOs.UpdateArtistDto
+
+@{
+    ViewData["Title"] = $"Edit {Model.Name}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <!-- Back Navigation -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Artists
+            </a>
+            <span class="badge-id">Editing ID: #@Model.ArtistId</span>
+        </div>
+
+        <div class="app-card">
+            <!-- Header -->
+            <div class="app-card-header colored-primary">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square fs-4 text-white"></i>
+                    <div>
+                        <h1 class="h4 mb-0 fw-bold text-white">Edit Artist</h1>
+                        <span class="text-white-50 small">#@Model.ArtistId &mdash; @Model.Name</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="app-card-body">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <div>Please check the errors below.</div>
+                    </div>
+
+                    <input type="hidden" asp-for="ArtistId" />
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-sm-6">
+                            <label asp-for="FirstName" class="form-label">First Name</label>
+                            <input asp-for="FirstName" class="form-control" placeholder="First name" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                            <label asp-for="LastName" class="form-label">Last Name</label>
+                            <input asp-for="LastName" class="form-control" placeholder="Last name" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Display Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="Full artist or group name" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                        <div class="form-text text-muted small">
+                            This name will be displayed across album listings and record searches.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Biography" class="form-label">Biography</label>
+                        <textarea asp-for="Biography" class="form-control" rows="7" 
+                                  placeholder="Artist biography, origins, discography notes..."></textarea>
+                        <span asp-validation-for="Biography" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Responsive Action Footer -->
+                    <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 pt-2 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary order-3 order-sm-1">
+                            Cancel
+                        </a>
+
+                        <div class="d-flex gap-2 order-1 order-sm-2">
+                            <a asp-action="Details" asp-route-id="@Model.ArtistId" class="btn btn-outline-primary flex-fill">
+                                <i class="bi bi-eye"></i> Details
+                            </a>
+                            <button type="submit" class="btn btn-success flex-fill">
+                                <i class="bi bi-check2"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

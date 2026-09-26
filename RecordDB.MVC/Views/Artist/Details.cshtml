@@ -1,0 +1,92 @@
+@model RecordDB.Shared.DTOs.ArtistDto
+
+@{
+    ViewData["Title"] = $"{Model.Name} - Details";
+    var initial = !string.IsNullOrEmpty(Model.Name) 
+        ? Model.Name.Trim().Substring(0, 1).ToUpper() 
+        : (!string.IsNullOrEmpty(Model.LastName) ? Model.LastName.Trim().Substring(0, 1).ToUpper() : "?");
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <!-- Breadcrumb & Back navigation -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Artists
+            </a>
+            <span class="badge-id">Artist ID: #@Model.ArtistId</span>
+        </div>
+
+        <div class="app-card">
+            <!-- Hero Header -->
+            <div class="app-card-header colored-primary">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="artist-avatar-lg">
+                        @initial
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-0 fw-bold text-white">@Model.Name</h1>
+                        <span class="text-white-50 small">Catalog Artist Profile</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-card-body">
+                <!-- Names Overview Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="text-muted small fw-semibold text-uppercase">First Name</div>
+                            <div class="fs-5 fw-medium text-dark mt-1">
+                                @(string.IsNullOrWhiteSpace(Model.FirstName) ? "—" : Model.FirstName)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="text-muted small fw-semibold text-uppercase">Last Name</div>
+                            <div class="fs-5 fw-medium text-dark mt-1">
+                                @(string.IsNullOrWhiteSpace(Model.LastName) ? "—" : Model.LastName)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Biography Section -->
+                <div>
+                    <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-card-text text-primary"></i> Biography
+                    </h5>
+                    @if (!string.IsNullOrEmpty(Model.Biography))
+                    {
+                        <div class="p-3 p-md-4 rounded-3 bg-white border" style="white-space: pre-wrap; line-height: 1.7; color: #334155;">
+                            @Model.Biography
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-4 rounded-3 bg-light text-center text-muted fst-italic border">
+                            <i class="bi bi-info-circle me-1"></i> No biography has been recorded for this artist yet.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Responsive Actions Footer -->
+            <div class="app-card-footer d-flex flex-column flex-sm-row justify-content-between gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary order-2 order-sm-1">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+
+                <div class="d-flex gap-2 order-1 order-sm-2">
+                    <a asp-action="Edit" asp-route-id="@Model.ArtistId" class="btn btn-success flex-fill">
+                        <i class="bi bi-pencil-square"></i> Edit Artist
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.ArtistId" class="btn btn-danger flex-fill">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
