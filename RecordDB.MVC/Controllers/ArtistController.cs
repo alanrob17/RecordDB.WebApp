@@ -118,5 +118,46 @@ namespace RecordDB.MVC.Controllers
             TempData["Success"] = "Artist deleted.";
             return RedirectToAction(nameof(Index));
         }
+
+        // -----------------------------------------------------------------------
+        // Search — find artist by FirstName / LastName, then show their records
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        public IActionResult Search()
+            => View(new ArtistSearchViewModel());
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Search(ArtistSearchViewModel vm)
+        {
+            // Build the search term from whichever fields the user filled in
+            var term = string.Join(" ",
+                new[] { vm.FirstName?.Trim(), vm.LastName?.Trim() }
+                .Where(s => !string.IsNullOrWhiteSpace(s)));
+
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                ModelState.AddModelError(string.Empty, "Please enter at least a first name or last name.");
+                return View(vm);
+            }
+
+            var results = (await artistService.SearchAsync(term)).ToList();
+
+            // Single match — go straight to their records without an extra click
+            if (results.Count == 1)
+            {
+                var artist = results[0];
+                return RedirectToAction("ByArtist", "Record", new
+                {
+                    artistId   = artist.ArtistId,
+                    artistName = artist.Name ?? $"{artist.FirstName} {artist.LastName}".Trim()
+                });
+            }
+
+            // Multiple (or zero) matches — let the user pick
+            vm.Results = results;
+            vm.Searched = true;
+            return View(vm);
+        }
     }
 }

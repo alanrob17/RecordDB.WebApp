@@ -34,30 +34,154 @@
                 
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <!-- Home -->
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                                 <i class="bi bi-house-door"></i> Home
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Artist" asp-action="Index">
-                                <i class="bi bi-people-fill"></i> Artists
+
+                        <!-- Search DropDown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-search"></i> Search
                             </a>
+                            <ul class="dropdown-menu shadow" aria-labelledby="searchDropdown">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-2" asp-area="" asp-controller="Artist" asp-action="Search">
+                                        <i class="bi bi-person-search text-primary"></i> Artist Search
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center justify-content-between disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <span><i class="bi bi-disc me-2 text-muted"></i>Record Search</span>
+                                        <span class="badge bg-secondary bg-opacity-25 text-muted ms-2" style="font-size: 0.65rem;">Soon</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center justify-content-between disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <span><i class="bi bi-music-note-list me-2 text-muted"></i>Track Search</span>
+                                        <span class="badge bg-secondary bg-opacity-25 text-muted ms-2" style="font-size: 0.65rem;">Soon</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Record" asp-action="Index">
-                                <i class="bi bi-disc"></i> Records
+
+                        <!-- Maintenance DropDown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="maintenanceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-gear-fill"></i> Maintenance
                             </a>
+                            <ul class="dropdown-menu shadow" aria-labelledby="maintenanceDropdown" style="min-width: 230px; max-height: 80vh; overflow-y: auto;">
+                                <!-- Artists -->
+                                <li><h6 class="dropdown-header"><i class="bi bi-people-fill me-1"></i> Artists</h6></li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="Index">
+                                        <i class="bi bi-list-ul me-2 text-primary"></i>Artist List
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="Create">
+                                        <i class="bi bi-plus-circle me-2 text-primary"></i>Create an Artist
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="bi bi-pencil me-2 text-muted"></i>Edit an Artist
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="bi bi-trash me-2 text-muted"></i>Delete an Artist
+                                    </a>
+                                </li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <!-- Records -->
+                                <li><h6 class="dropdown-header"><i class="bi bi-disc me-1"></i> Records</h6></li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="Index">
+                                        <i class="bi bi-list-ul me-2 text-primary"></i>Record List
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="Create">
+                                        <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Record
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="bi bi-pencil me-2 text-muted"></i>Edit a Record
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="bi bi-trash me-2 text-muted"></i>Delete a Record
+                                    </a>
+                                </li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <!-- Discs -->
+                                <li><h6 class="dropdown-header"><i class="bi bi-vinyl-fill me-1"></i> Discs</h6></li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Disc" asp-action="Index">
+                                        <i class="bi bi-list-ul me-2 text-primary"></i>Disc List
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Disc" asp-action="Create">
+                                        <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Disc
+                                    </a>
+                                </li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <!-- Tracks -->
+                                <li><h6 class="dropdown-header"><i class="bi bi-music-note-list me-1"></i> Tracks</h6></li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Track" asp-action="Index">
+                                        <i class="bi bi-list-ul me-2 text-primary"></i>Track List
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Track" asp-action="Create">
+                                        <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Track
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="bi bi-pencil me-2 text-muted"></i>Edit a Track
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="bi bi-trash me-2 text-muted"></i>Delete a Track
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Disc" asp-action="Index">
-                                <i class="bi bi-vinyl-fill"></i> Discs
+
+                        <!-- Statistics DropDown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="statsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bar-chart-fill"></i> Statistics
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Track" asp-action="Index">
-                                <i class="bi bi-music-note-list"></i> Tracks
-                            </a>
+                            <ul class="dropdown-menu shadow" aria-labelledby="statsDropdown">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center justify-content-between disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <span><i class="bi bi-pie-chart me-2 text-muted"></i>Artist Totals</span>
+                                        <span class="badge bg-secondary bg-opacity-25 text-muted ms-2" style="font-size: 0.65rem;">Soon</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center justify-content-between disabled" href="#" tabindex="-1" aria-disabled="true">
+                                        <span><i class="bi bi-graph-up me-2 text-muted"></i>Statistics</span>
+                                        <span class="badge bg-secondary bg-opacity-25 text-muted ms-2" style="font-size: 0.65rem;">Soon</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                     <div class="d-flex align-items-center">

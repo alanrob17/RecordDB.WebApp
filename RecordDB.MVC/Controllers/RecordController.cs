@@ -75,6 +75,39 @@ namespace RecordDB.MVC.Controllers
         }
 
         // -----------------------------------------------------------------------
+        // ByArtist — records for one specific artist (used by Artist/Search results)
+        // -----------------------------------------------------------------------
+
+        public async Task<IActionResult> ByArtist(int artistId, string artistName, int page = 1)
+        {
+            const int pageSize = 20;
+
+            // Use the dedicated API endpoint — much faster than fetching all and filtering
+            var all = (await recordService.GetByArtistNameAsync(artistName)).ToList();
+
+            var totalCount = all.Count;
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            var vm = new PaginatedViewModel<ArtistRecordDto>
+            {
+                Items       = all.Skip((page - 1) * pageSize).Take(pageSize),
+                SearchTerm  = artistName,           // re-used so Index view shows the filter badge
+                CurrentPage = page,
+                TotalPages  = totalPages,
+                TotalCount  = totalCount,
+                PageSize    = pageSize
+            };
+
+            // Pass the artist identity so the Index view can display a better heading
+            ViewBag.ByArtistId   = artistId;
+            ViewBag.ByArtistName = artistName;
+
+            return View("Index", vm);
+        }
+
+        // -----------------------------------------------------------------------
         // Details — single record by ID
         // -----------------------------------------------------------------------
 

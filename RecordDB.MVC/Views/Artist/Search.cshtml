@@ -1,0 +1,259 @@
+@model RecordDB.MVC.Models.ArtistSearchViewModel
+
+@{
+    ViewData["Title"] = "Artist Search";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+
+        <!-- Page Heading -->
+        <div class="mb-4">
+            <h1 class="h2 fw-bold text-dark d-flex align-items-center gap-2">
+                <i class="bi bi-person-search text-primary"></i> Artist Search
+            </h1>
+            <p class="text-muted small mb-0">
+                Enter a first name, last name, or both to find an artist and browse their albums.
+            </p>
+        </div>
+
+        <!-- ======================================================================
+             Search Form Card
+             ====================================================================== -->
+        <div class="app-card mb-4">
+            <div class="app-card-header colored-primary">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-search fs-5 text-white"></i>
+                    <h2 class="h5 mb-0 fw-bold text-white">Find an Artist</h2>
+                </div>
+            </div>
+
+            <div class="app-card-body">
+                <form asp-action="Search" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Validation summary -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger border-0 d-flex align-items-center gap-2 mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                            <div>
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <div>@error.ErrorMessage</div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Name fields — side-by-side on tablet/PC, stacked on phone -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-sm-6">
+                            <label asp-for="FirstName" class="form-label fw-semibold">
+                                <i class="bi bi-person me-1 text-muted"></i> First Name
+                            </label>
+                            <input asp-for="FirstName" class="form-control form-control-lg"
+                                   placeholder="e.g. David"
+                                   autocomplete="off" autofocus />
+                            <div class="form-text text-muted small">Optional — leave blank to search by last name only.</div>
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                            <label asp-for="LastName" class="form-label fw-semibold">
+                                <i class="bi bi-person me-1 text-muted"></i> Last Name
+                            </label>
+                            <input asp-for="LastName" class="form-control form-control-lg"
+                                   placeholder="e.g. Bowie"
+                                   autocomplete="off" />
+                            <div class="form-text text-muted small">Optional — leave blank to search by first name only.</div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 pt-2 border-top">
+                        <a asp-controller="Artist" asp-action="Index"
+                           class="btn btn-outline-secondary order-2 order-sm-1">
+                            <i class="bi bi-people-fill"></i> Browse All Artists
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-4 order-1 order-sm-2">
+                            <i class="bi bi-search me-1"></i> Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ======================================================================
+             Results Section (only shown after a search has been performed)
+             ====================================================================== -->
+        @if (Model.Searched)
+        {
+            @if (!Model.HasResults)
+            {
+                <!-- No results -->
+                <div class="app-card text-center py-5 px-3">
+                    <div class="mb-3">
+                        <i class="bi bi-person-x text-muted" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 class="fw-semibold">No Artists Found</h4>
+                    <p class="text-muted mb-3">
+                        No artist matched
+                        <strong>
+                            @(string.Join(" ",
+                                new[] { Model.FirstName, Model.LastName }
+                                .Where(s => !string.IsNullOrWhiteSpace(s))))
+                        </strong>.
+                        Try a different spelling or just a last name.
+                    </p>
+                    <a asp-controller="Artist" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-people-fill"></i> Browse All Artists
+                    </a>
+                </div>
+            }
+            else
+            {
+                <!-- Results found — multiple matches, user selects which artist -->
+                <div class="mb-3 d-flex align-items-center justify-content-between">
+                    <div class="fw-semibold text-dark">
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>
+                        @Model.ResultCount @(Model.ResultCount == 1 ? "artist" : "artists") found
+                    </div>
+                    <div class="text-muted small">
+                        Click an artist to see their albums.
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     Desktop Table (lg+)
+                     ============================================================ -->
+                <div class="app-card d-none d-lg-block mb-4">
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle" style="cursor: pointer;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 75px;">ID</th>
+                                    <th>Artist</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th class="text-end" style="width: 170px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var artist in Model.Results!)
+                                {
+                                    var initial = !string.IsNullOrEmpty(artist.Name)
+                                        ? artist.Name.Trim()[..1].ToUpper()
+                                        : (!string.IsNullOrEmpty(artist.LastName)
+                                            ? artist.LastName.Trim()[..1].ToUpper()
+                                            : "?");
+
+                                    var byArtistUrl = Url.Action("ByArtist", "Record", new
+                                    {
+                                        artistId   = artist.ArtistId,
+                                        artistName = artist.Name
+                                    });
+
+                                    <tr class="table-row-link" onclick="window.location='@byArtistUrl'"
+                                        style="cursor: pointer;" title="View albums by @artist.Name">
+                                        <td><span class="badge-id">#@artist.ArtistId</span></td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="artist-avatar">@initial</div>
+                                                <div>
+                                                    <div class="fw-semibold text-primary">@artist.Name</div>
+                                                    <div class="small text-muted">
+                                                        <i class="bi bi-disc me-1"></i>Click to view albums
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-muted">
+                                            @(string.IsNullOrWhiteSpace(artist.FirstName) ? "—" : artist.FirstName)
+                                        </td>
+                                        <td class="text-muted">
+                                            @(string.IsNullOrWhiteSpace(artist.LastName) ? "—" : artist.LastName)
+                                        </td>
+                                        <td class="text-end text-nowrap" onclick="event.stopPropagation()">
+                                            <a asp-controller="Artist" asp-action="Details" asp-route-id="@artist.ArtistId"
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye"></i> Profile
+                                            </a>
+                                            <a asp-controller="Artist" asp-action="Edit" asp-route-id="@artist.ArtistId"
+                                               class="btn btn-success btn-sm">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     Mobile / Tablet Cards (< lg)
+                     ============================================================ -->
+                <div class="d-lg-none">
+                    <div class="row g-3">
+                        @foreach (var artist in Model.Results!)
+                        {
+                            var initial = !string.IsNullOrEmpty(artist.Name)
+                                ? artist.Name.Trim()[..1].ToUpper()
+                                : (!string.IsNullOrEmpty(artist.LastName)
+                                    ? artist.LastName.Trim()[..1].ToUpper()
+                                    : "?");
+
+                            <div class="col-12 col-md-6">
+                                <div class="mobile-artist-card" style="cursor: pointer;">
+                                    <!-- Entire header area links to the artist's records -->
+                                    <a asp-controller="Record" asp-action="ByArtist"
+                                       asp-route-artistId="@artist.ArtistId"
+                                       asp-route-artistName="@artist.Name"
+                                       class="text-decoration-none d-block mb-2">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="artist-avatar">@initial</div>
+                                                <div>
+                                                    <div class="artist-name fw-semibold text-primary">@artist.Name</div>
+                                                    @if (!string.IsNullOrEmpty(artist.FirstName) || !string.IsNullOrEmpty(artist.LastName))
+                                                    {
+                                                        <div class="artist-sub text-muted small">@artist.FirstName @artist.LastName</div>
+                                                    }
+                                                    <div class="small text-muted mt-1">
+                                                        <i class="bi bi-disc me-1"></i>Tap to view albums
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class="badge-id">#@artist.ArtistId</span>
+                                        </div>
+                                    </a>
+
+                                    @if (!string.IsNullOrEmpty(artist.Biography))
+                                    {
+                                        <div class="artist-bio text-muted small mb-2">
+                                            @(artist.Biography.Length > 100
+                                                ? artist.Biography[..100] + "…"
+                                                : artist.Biography)
+                                        </div>
+                                    }
+
+                                    <!-- Secondary actions — Profile and Edit only -->
+                                    <div class="d-flex gap-2 pt-2 border-top">
+                                        <a asp-controller="Artist" asp-action="Details" asp-route-id="@artist.ArtistId"
+                                           class="btn btn-outline-primary flex-fill btn-sm">
+                                            <i class="bi bi-eye"></i> Profile
+                                        </a>
+                                        <a asp-controller="Artist" asp-action="Edit" asp-route-id="@artist.ArtistId"
+                                           class="btn btn-success flex-fill btn-sm">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

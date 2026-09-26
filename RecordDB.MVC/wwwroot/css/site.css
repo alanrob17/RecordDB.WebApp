@@ -118,6 +118,52 @@ body {
     box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
 }
 
+/* Navbar dropdown styling */
+.app-navbar .dropdown-menu {
+    background-color: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: var(--app-radius);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    padding: 0.5rem;
+}
+
+.app-navbar .dropdown-item {
+    color: #cbd5e1;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--app-radius-sm);
+    transition: all 0.15s ease;
+}
+
+.app-navbar .dropdown-item:hover,
+.app-navbar .dropdown-item:focus {
+    color: #ffffff;
+    background-color: rgba(99, 102, 241, 0.18);
+}
+
+.app-navbar .dropdown-item.disabled {
+    color: #64748b !important;
+    background-color: transparent !important;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.app-navbar .dropdown-header {
+    color: #818cf8;
+    font-size: 0.725rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0.85rem 0.2rem;
+    text-transform: uppercase;
+}
+
+.app-navbar .dropdown-divider {
+    border-top: 1px solid #1e293b;
+    margin: 0.4rem 0;
+    opacity: 1;
+}
+
 /* ==========================================================================
    Modern Cards & Containers
    ========================================================================== */

@@ -1,21 +1,69 @@
 @model RecordDB.MVC.Models.PaginatedViewModel<RecordDB.Shared.DTOs.ArtistRecordDto>
 
 @{
-    ViewData["Title"] = "Records";
+    var byArtistName = ViewBag.ByArtistName as string;
+    var byArtistId   = ViewBag.ByArtistId   as int?;
+    var isByArtist   = !string.IsNullOrWhiteSpace(byArtistName);
+    ViewData["Title"] = isByArtist ? $"{byArtistName} — Albums" : "Records";
+}
+
+@* ── Artist-filter breadcrumb banner (only visible when coming from Artist Search) ── *@
+@if (isByArtist)
+{
+    <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center gap-3 mb-3 py-2 px-3" role="alert"
+         style="background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 100%); border-left: 4px solid #4f46e5 !important;">
+        <div class="d-flex align-items-center gap-2 flex-fill">
+            <i class="bi bi-person-fill text-primary fs-5"></i>
+            <div>
+                <div class="fw-semibold text-dark">
+                    Showing albums for <span class="text-primary">@byArtistName</span>
+                </div>
+                <div class="small text-muted">
+                    @Model.TotalCount @(Model.TotalCount == 1 ? "album" : "albums") found &mdash;
+                    @if (byArtistId.HasValue)
+                    {
+                        <a asp-controller="Artist" asp-action="Details" asp-route-id="@byArtistId"
+                           class="text-primary text-decoration-none fw-medium">
+                            <i class="bi bi-eye me-1"></i>View Artist Profile
+                        </a>
+                        <span class="mx-1 text-muted">|</span>
+                    }
+                    <a asp-controller="Artist" asp-action="Search" class="text-muted text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Artist Search
+                    </a>
+                </div>
+            </div>
+        </div>
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary flex-shrink-0">
+            <i class="bi bi-x-lg"></i> Clear Filter
+        </a>
+    </div>
 }
 
 <!-- Page Header & Action Bar -->
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
         <h1 class="h2 mb-1 fw-bold text-dark d-flex align-items-center gap-2">
-            <i class="bi bi-disc text-primary"></i> Records
+            <i class="bi bi-disc text-primary"></i>
+            @if (isByArtist)
+            {
+                <span>@byArtistName</span>
+            }
+            else
+            {
+                <span>Records</span>
+            }
             <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill fs-6 fw-semibold">
                 @Model.TotalCount @(Model.TotalCount == 1 ? "album" : "albums")
             </span>
         </h1>
-        <p class="text-muted mb-0 small">Browse, search, and manage albums, vinyls, CDs, and media in your collection.</p>
+        <p class="text-muted mb-0 small">
+            @(isByArtist
+                ? $"All albums by {byArtistName} in your collection."
+                : "Browse, search, and manage albums, vinyls, CDs, and media in your collection.")
+        </p>
     </div>
-    
+
     <div class="d-flex flex-column flex-sm-row gap-2">
         <!-- Search form -->
         <form method="get" asp-action="Index" class="d-flex gap-1">
