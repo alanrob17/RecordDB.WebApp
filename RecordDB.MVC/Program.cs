@@ -18,6 +18,12 @@ builder.Services.AddHttpClient<IArtistService, ArtistService>(client =>
 builder.Services.AddHttpClient<IRecordService, RecordService>(client =>
     client.BaseAddress = apiBase);
 
+builder.Services.AddHttpClient<IDiscService, DiscService>(client =>
+    client.BaseAddress = apiBase);
+
+builder.Services.AddHttpClient<ITrackService, TrackService>(client =>
+    client.BaseAddress = apiBase);
+
 // -----------------------------------------------------------------------
 // Pipeline
 // -----------------------------------------------------------------------

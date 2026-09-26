@@ -1,0 +1,128 @@
+@model RecordDB.Shared.DTOs.ArtistRecordDiscDto
+
+@{
+    ViewData["Title"] = $"Disc {Model.DiscNo} — {Model.Name}";
+    var formattedLength = ViewBag.FormattedLength as string ?? "—";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <!-- Back Navigation -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Discs
+            </a>
+            <span class="badge-id">Disc ID: #@Model.DiscId</span>
+        </div>
+
+        <div class="app-card">
+            <!-- Hero Header -->
+            <div class="app-card-header colored-primary">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="artist-avatar-lg" style="background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);">
+                        <i class="bi bi-vinyl-fill fs-2 text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-white-50 small text-uppercase fw-semibold tracking-wide">
+                            Disc @Model.DiscNo
+                        </div>
+                        <h1 class="h3 mb-0 fw-bold text-white">@Model.Name</h1>
+                        <div class="text-white-50 small mt-1">
+                            by <span class="text-white fw-semibold">@Model.ArtistName</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-card-body">
+                <!-- Metadata Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <div class="text-muted small fw-semibold text-uppercase">Disc No.</div>
+                            <div class="fs-4 fw-bold text-dark mt-1">@Model.DiscNo</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <div class="text-muted small fw-semibold text-uppercase">Length</div>
+                            <div class="fs-5 fw-bold text-dark mt-1">
+                                @if (formattedLength != "—")
+                                {
+                                    <span><i class="bi bi-clock text-primary me-1"></i>@formattedLength</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <div class="text-muted small fw-semibold text-uppercase">FreeDb Disc ID</div>
+                            <div class="fs-5 fw-bold text-dark mt-1">
+                                @(Model.FreeDbDiscId.HasValue ? Model.FreeDbDiscId.Value.ToString() : "—")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <div class="text-muted small fw-semibold text-uppercase">Record ID</div>
+                            <div class="fs-5 fw-bold text-dark mt-1">
+                                <a asp-controller="Record" asp-action="Details" asp-route-id="@Model.RecordId"
+                                   class="text-primary text-decoration-none fw-semibold">#@Model.RecordId</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Metadata -->
+                <div class="card bg-white border rounded-3">
+                    <div class="card-body">
+                        <dl class="row mb-0 small">
+                            <dt class="col-sm-4 text-muted">Album</dt>
+                            <dd class="col-sm-8 fw-semibold text-dark">
+                                <a asp-controller="Record" asp-action="Details" asp-route-id="@Model.RecordId"
+                                   class="text-primary text-decoration-none">@Model.Name</a>
+                            </dd>
+
+                            <dt class="col-sm-4 text-muted">Artist</dt>
+                            <dd class="col-sm-8 text-dark">@Model.ArtistName</dd>
+
+                            <dt class="col-sm-4 text-muted">Length (seconds)</dt>
+                            <dd class="col-sm-8 text-dark">@(Model.Length.HasValue ? $"{Model.Length} s" : "—")</dd>
+
+                            <dt class="col-sm-4 text-muted">FreeDb ID</dt>
+                            <dd class="col-sm-8">
+                                @if (!string.IsNullOrWhiteSpace(Model.FreeDbId))
+                                {
+                                    <code class="text-muted">@Model.FreeDbId</code>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Footer -->
+            <div class="app-card-footer d-flex flex-column flex-sm-row justify-content-between gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary order-2 order-sm-1">
+                    <i class="bi bi-arrow-left"></i> Back to Discs
+                </a>
+                <div class="d-flex gap-2 order-1 order-sm-2">
+                    <a asp-action="Edit" asp-route-id="@Model.DiscId" class="btn btn-success flex-fill">
+                        <i class="bi bi-pencil-square"></i> Edit Disc
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.DiscId" class="btn btn-danger flex-fill">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

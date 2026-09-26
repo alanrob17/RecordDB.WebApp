@@ -1,0 +1,92 @@
+@model RecordDB.Shared.DTOs.ArtistRecordDiscDto
+
+@{
+    ViewData["Title"] = $"Delete Disc {Model.DiscNo}";
+    var formattedLength = ViewBag.FormattedLength as string ?? "—";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <div class="mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Discs
+            </a>
+        </div>
+
+        <div class="app-card border-danger">
+            <div class="app-card-header colored-danger">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-octagon-fill fs-4 text-white"></i>
+                    <div>
+                        <h1 class="h4 mb-0 fw-bold text-white">Confirm Disc Deletion</h1>
+                        <span class="text-white-50 small">Warning: This action cannot be reversed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-card-body">
+                <div class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger d-flex align-items-start gap-2 mb-4">
+                    <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
+                    <div>
+                        <strong>Are you sure you want to delete this disc?</strong>
+                        <div class="small mt-1">
+                            This will permanently remove <strong>Disc @Model.DiscNo</strong>
+                            of <strong>@Model.Name</strong> by <strong>@Model.ArtistName</strong> from the database.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disc Preview -->
+                <div class="p-3 bg-light rounded-3 border mb-3">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="brand-icon" style="width: 40px; height: 40px; font-size: 1rem;">
+                            <i class="bi bi-vinyl-fill"></i>
+                        </div>
+                        <div>
+                            <h2 class="h5 mb-0 fw-bold text-dark">Disc @Model.DiscNo — @Model.Name</h2>
+                            <div class="text-muted small">by @Model.ArtistName</div>
+                        </div>
+                    </div>
+
+                    <dl class="row mb-0 small">
+                        <dt class="col-5 text-muted">Disc ID:</dt>
+                        <dd class="col-7 text-dark mb-1">#@Model.DiscId</dd>
+
+                        <dt class="col-5 text-muted">Length:</dt>
+                        <dd class="col-7 text-dark mb-1">@formattedLength</dd>
+
+                        <dt class="col-5 text-muted">FreeDb Disc ID:</dt>
+                        <dd class="col-7 text-dark mb-1">@(Model.FreeDbDiscId.HasValue ? Model.FreeDbDiscId.Value.ToString() : "—")</dd>
+
+                        <dt class="col-5 text-muted">FreeDb ID:</dt>
+                        <dd class="col-7 text-dark mb-0">
+                            @if (!string.IsNullOrWhiteSpace(Model.FreeDbId))
+                            {
+                                <code>@Model.FreeDbId</code>
+                            }
+                            else
+                            {
+                                <span>—</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" name="id" value="@Model.DiscId" />
+                    <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary order-3 order-sm-1">Cancel</a>
+                        <div class="d-flex gap-2 order-1 order-sm-2">
+                            <a asp-action="Details" asp-route-id="@Model.DiscId" class="btn btn-outline-primary flex-fill">
+                                <i class="bi bi-eye"></i> Details
+                            </a>
+                            <button type="submit" class="btn btn-danger flex-fill">
+                                <i class="bi bi-trash-fill"></i> Permanently Delete
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
