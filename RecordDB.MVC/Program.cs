@@ -15,6 +15,9 @@ var apiBase = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!);
 builder.Services.AddHttpClient<IArtistService, ArtistService>(client =>
     client.BaseAddress = apiBase);
 
+builder.Services.AddHttpClient<IRecordService, RecordService>(client =>
+    client.BaseAddress = apiBase);
+
 // -----------------------------------------------------------------------
 // Pipeline
 // -----------------------------------------------------------------------

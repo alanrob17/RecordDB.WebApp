@@ -1,0 +1,175 @@
+@model RecordDB.Shared.DTOs.ArtistRecordDto
+
+@{
+    ViewData["Title"] = $"{Model.Name} - Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <!-- Breadcrumb & Back navigation -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Records
+            </a>
+            <span class="badge-id">Record ID: #@Model.RecordId</span>
+        </div>
+
+        <div class="app-card">
+            <!-- Hero Header -->
+            <div class="app-card-header colored-primary">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="artist-avatar-lg" style="background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);">
+                        <i class="bi bi-vinyl fs-2 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-0 fw-bold text-white">@Model.Name</h1>
+                        <div class="text-white-50 mt-1">
+                            @if (Model.ArtistId > 0)
+                            {
+                                <span>by </span>
+                                <a asp-controller="Artist" asp-action="Details" asp-route-id="@Model.ArtistId" 
+                                   class="text-white fw-semibold text-decoration-underline">
+                                    @Model.ArtistName
+                                </a>
+                            }
+                            @if (Model.Recorded > 0)
+                            {
+                                <span class="ms-1">(@Model.Recorded)</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-card-body">
+                <!-- Metadata Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <div class="text-muted small fw-semibold text-uppercase">Recorded</div>
+                            <div class="fs-5 fw-bold text-dark mt-1">
+                                @(Model.Recorded > 0 ? Model.Recorded.ToString() : "—")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <div class="text-muted small fw-semibold text-uppercase">Format / Media</div>
+                            <div class="fs-5 fw-bold text-dark mt-1">
+                                @(string.IsNullOrWhiteSpace(Model.Media) ? "CD" : Model.Media)
+                                @if (Model.Discs > 1)
+                                {
+                                    <span class="small fw-normal text-muted">(@Model.Discs)</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <div class="text-muted small fw-semibold text-uppercase">Rating</div>
+                            <div class="fs-5 fw-bold text-dark mt-1">
+                                @if (!string.IsNullOrWhiteSpace(Model.Rating))
+                                {
+                                    <span class="text-warning">★ @Model.Rating</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <div class="text-muted small fw-semibold text-uppercase">Cost</div>
+                            <div class="fs-5 fw-bold text-dark mt-1">
+                                @(Model.Cost.HasValue ? Model.Cost.Value.ToString("C") : "—")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Metadata -->
+                <div class="card bg-white border rounded-3 mb-4">
+                    <div class="card-body">
+                        <dl class="row mb-0 small">
+                            <dt class="col-sm-3 text-muted">Artist</dt>
+                            <dd class="col-sm-9 fw-semibold text-dark">
+                                @if (Model.ArtistId > 0)
+                                {
+                                    <a asp-controller="Artist" asp-action="Details" asp-route-id="@Model.ArtistId" class="text-primary text-decoration-none">
+                                        @Model.ArtistName
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>—</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-3 text-muted">Field / Genre</dt>
+                            <dd class="col-sm-9 text-dark">@(string.IsNullOrWhiteSpace(Model.Field) ? "—" : Model.Field)</dd>
+
+                            <dt class="col-sm-3 text-muted">Record Label</dt>
+                            <dd class="col-sm-9 text-dark">@(string.IsNullOrWhiteSpace(Model.Label) ? "—" : Model.Label)</dd>
+
+                            <dt class="col-sm-3 text-muted">Pressing Country</dt>
+                            <dd class="col-sm-9 text-dark">@(string.IsNullOrWhiteSpace(Model.Pressing) ? "—" : Model.Pressing)</dd>
+
+                            <dt class="col-sm-3 text-muted">Discs Count</dt>
+                            <dd class="col-sm-9 text-dark">@Model.Discs</dd>
+
+                            <dt class="col-sm-3 text-muted">Date Bought</dt>
+                            <dd class="col-sm-9 text-dark">
+                                @(Model.Bought != DateTime.MinValue && Model.Bought != default 
+                                    ? Model.Bought.ToString("d MMMM yyyy") 
+                                    : "—")
+                            </dd>
+
+                            @if (!string.IsNullOrWhiteSpace(Model.CoverName))
+                            {
+                                <dt class="col-sm-3 text-muted">Cover File</dt>
+                                <dd class="col-sm-9 text-dark"><code>@Model.CoverName</code></dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- Album Review Section -->
+                <div>
+                    <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-chat-square-quote text-primary"></i> Album Review / Notes
+                    </h5>
+                    @if (!string.IsNullOrEmpty(Model.Review))
+                    {
+                        <div class="p-3 p-md-4 rounded-3 bg-white border" style="white-space: pre-wrap; line-height: 1.7; color: #334155;">
+                            @Model.Review
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-4 rounded-3 bg-light text-center text-muted fst-italic border">
+                            <i class="bi bi-info-circle me-1"></i> No review has been written for this album yet.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Responsive Actions Footer -->
+            <div class="app-card-footer d-flex flex-column flex-sm-row justify-content-between gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary order-2 order-sm-1">
+                    <i class="bi bi-arrow-left"></i> Back to Records
+                </a>
+
+                <div class="d-flex gap-2 order-1 order-sm-2">
+                    <a asp-action="Edit" asp-route-id="@Model.RecordId" class="btn btn-success flex-fill">
+                        <i class="bi bi-pencil-square"></i> Edit Record
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.RecordId" class="btn btn-danger flex-fill">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
