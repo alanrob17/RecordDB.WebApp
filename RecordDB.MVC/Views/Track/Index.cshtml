@@ -1,37 +1,72 @@
 @model RecordDB.MVC.Models.PaginatedViewModel<RecordDB.Shared.DTOs.ArtistRecordDiscTrackDto>
 
 @{
-    ViewData["Title"] = "Tracks";
+    var hasSearch = !string.IsNullOrWhiteSpace(Model.SearchTerm);
+    ViewData["Title"] = hasSearch ? $"Tracks matching \"{Model.SearchTerm}\"" : "Tracks";
     var formatLength = ViewBag.FormatLength as Func<int?, string> ?? (_ => "—");
+}
+
+@* ── Search Results Banner (Visible when coming from Track Search or search query) ── *@
+@if (hasSearch)
+{
+    <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center gap-3 mb-4 py-2 px-3" role="alert"
+         style="background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 100%); border-left: 4px solid #4f46e5 !important;">
+        <div class="d-flex align-items-center gap-2 flex-fill">
+            <i class="bi bi-music-note-beamed text-primary fs-5"></i>
+            <div>
+                <div class="fw-semibold text-dark">
+                    Showing tracks matching <span class="text-primary fw-bold">"@Model.SearchTerm"</span>
+                </div>
+                <div class="small text-muted">
+                    @Model.TotalCount @(Model.TotalCount == 1 ? "track" : "tracks") found &mdash;
+                    <a asp-action="Search" class="text-primary text-decoration-none fw-medium">
+                        <i class="bi bi-search me-1"></i>New Track Search
+                    </a>
+                </div>
+            </div>
+        </div>
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary flex-shrink-0" title="Clear search and view all tracks">
+            <i class="bi bi-x-lg"></i> Clear Search
+        </a>
+    </div>
 }
 
 <!-- Page Header & Action Bar -->
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
         <h1 class="h2 mb-1 fw-bold text-dark d-flex align-items-center gap-2">
-            <i class="bi bi-music-note-list text-primary"></i> Tracks
+            <i class="bi bi-music-note-list text-primary"></i>
+            @(hasSearch ? "Track Results" : "Tracks")
             <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill fs-6 fw-semibold">
                 @Model.TotalCount @(Model.TotalCount == 1 ? "track" : "tracks")
             </span>
         </h1>
-        <p class="text-muted mb-0 small">Search and manage individual tracks across your music collection.</p>
+        <p class="text-muted mb-0 small">
+            @(hasSearch
+                ? $"Showing matching tracks across albums and discs for \"{Model.SearchTerm}\"."
+                : "Search and manage individual tracks across your music collection.")
+        </p>
     </div>
 
     <div class="d-flex flex-column flex-sm-row gap-2">
+        <a asp-action="Search" class="btn btn-outline-primary text-nowrap">
+            <i class="bi bi-search"></i> Track Search
+        </a>
+
         <form method="get" asp-action="Index" class="d-flex gap-1">
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0 text-muted">
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" name="search" value="@Model.SearchTerm" class="form-control border-start-0"
-                       placeholder="Search by track name..." style="min-width: 180px;" />
-                @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+                       placeholder="Filter by track..." style="min-width: 170px;" />
+                @if (hasSearch)
                 {
                     <a asp-action="Index" class="btn btn-outline-secondary border-start-0" title="Clear search">
                         <i class="bi bi-x-lg"></i>
                     </a>
                 }
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" class="btn btn-primary">Filter</button>
             </div>
         </form>
 
@@ -59,20 +94,26 @@
         </div>
         <h4 class="fw-semibold">No tracks found</h4>
         <p class="text-muted mb-3">
-            @(string.IsNullOrWhiteSpace(Model.SearchTerm)
-                ? "Your track library is currently empty."
-                : $"No tracks matched \"{Model.SearchTerm}\".")
+            @(hasSearch
+                ? $"No tracks matched \"{Model.SearchTerm}\"."
+                : "Your track library is currently empty.")
         </p>
-        <div>
-            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+            @if (hasSearch)
             {
-                <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                <a asp-action="Search" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Try Another Search
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> View All Tracks
                 </a>
             }
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Add New Track
-            </a>
+            else
+            {
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Add New Track
+                </a>
+            }
         </div>
     </div>
 }

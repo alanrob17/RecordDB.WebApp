@@ -32,4 +32,5 @@ Thumbs.db
 appsettings.json
 appsettings.Development.json
 logs/
+images/
 *.bak

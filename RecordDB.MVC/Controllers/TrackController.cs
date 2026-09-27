@@ -181,5 +181,28 @@ namespace RecordDB.MVC.Controllers
             TempData["Success"] = "Track deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
+
+        // -----------------------------------------------------------------------
+        // Search — search tracks by partial or full track name
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        public IActionResult Search()
+        {
+            return View("~/Views/Track/Search.cshtml", new TrackSearchViewModel());
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Search(TrackSearchViewModel vm)
+        {
+            if (string.IsNullOrWhiteSpace(vm.TrackName))
+            {
+                ModelState.AddModelError(nameof(vm.TrackName), "Please enter a partial or full track name to search.");
+                return View("~/Views/Track/Search.cshtml", vm);
+            }
+
+            // Redirects to Index with the search query, which runs SelectTracksByPartialNameAsync (up_SelectPartialRecordTracks)
+            return RedirectToAction(nameof(Index), new { search = vm.TrackName.Trim() });
+        }
     }
 }
