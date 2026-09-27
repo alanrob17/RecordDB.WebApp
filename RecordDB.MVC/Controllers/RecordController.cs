@@ -10,7 +10,7 @@ namespace RecordDB.MVC.Controllers
     /// MVC controller for Record (Album) operations.
     /// All data access goes through <see cref="IRecordService"/> and <see cref="IArtistService"/>.
     /// </summary>
-    public class RecordController(IRecordService recordService, IArtistService artistService) : Controller
+    public class RecordController(IRecordService recordService, IArtistService artistService, ITrackService trackService) : Controller
     {
         // -----------------------------------------------------------------------
         // Helpers
@@ -119,6 +119,40 @@ namespace RecordDB.MVC.Controllers
         }
 
         // -----------------------------------------------------------------------
+        // RecordView — rich showcase page for a record with tracks, bio, and review
+        // -----------------------------------------------------------------------
+
+        public async Task<IActionResult> RecordView(int id)
+        {
+            // 1. Fetch record using RecordRepository.SelectAsync(id) -> up_RecordSelectByIdCore
+            var record = await recordService.GetByIdAsync(id);
+            if (record is null) return NotFound();
+
+            // 2. Ensure Artist Biography is loaded if not already present in the projection
+            if (string.IsNullOrWhiteSpace(record.Biography) && record.ArtistId > 0)
+            {
+                var artist = await artistService.GetByIdAsync(record.ArtistId);
+                if (artist != null && !string.IsNullOrWhiteSpace(artist.Biography))
+                {
+                    record.Biography = artist.Biography;
+                }
+            }
+
+            // 3. Fetch tracks using TrackRepository.SelectTracksByRecordAsync(name) -> up_GetArtistRecordTracks
+            var tracks = !string.IsNullOrWhiteSpace(record.Name)
+                ? (await trackService.GetByRecordAsync(record.Name)).ToList()
+                : [];
+
+            var vm = new RecordShowViewModel
+            {
+                Record = record,
+                Tracks = tracks
+            };
+
+            return View("~/Views/Record/RecordView.cshtml", vm);
+        }
+
+        // -----------------------------------------------------------------------
         // Create — new record form
         // -----------------------------------------------------------------------
 
@@ -216,6 +250,69 @@ namespace RecordDB.MVC.Controllers
             await recordService.DeleteAsync(id);
             TempData["Success"] = "Record deleted successfully.";
             return RedirectToAction(nameof(Index));
+        }
+
+        // -----------------------------------------------------------------------
+        // Search — filtered search by partial Record.Name
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string? recordName = null, int? selectedRecordId = null)
+        {
+            var vm = new RecordSearchViewModel
+            {
+                RecordName = recordName?.Trim(),
+                SelectedRecordId = selectedRecordId
+            };
+
+            if (!string.IsNullOrWhiteSpace(recordName))
+            {
+                var term = recordName.Trim();
+                var all = await recordService.GetAllAsync(); // up_RecordSelectAll
+                vm.Results = all
+                    .Where(r => r.Name != null && r.Name.Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(r => r.Name)
+                    .ToList();
+                vm.Searched = true;
+            }
+
+            if (selectedRecordId.HasValue && selectedRecordId.Value > 0)
+            {
+                vm.SelectedRecord = await recordService.GetByIdAsync(selectedRecordId.Value); // up_RecordSelectByIdCore
+            }
+
+            return View("~/Views/Record/Search.cshtml", vm);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Search(RecordSearchViewModel vm, string? actionType = null)
+        {
+            // If the user clicked "View Selected Record", navigate directly to RecordView
+            if (actionType == "view" && vm.SelectedRecordId.HasValue && vm.SelectedRecordId.Value > 0)
+            {
+                return RedirectToAction(nameof(RecordView), new { id = vm.SelectedRecordId.Value });
+            }
+
+            // Otherwise, performing a search
+            if (string.IsNullOrWhiteSpace(vm.RecordName))
+            {
+                ModelState.AddModelError(nameof(vm.RecordName), "Please enter a partial record name to search.");
+                return View("~/Views/Record/Search.cshtml", vm);
+            }
+
+            var searchTerm = vm.RecordName.Trim();
+            var allRecords = await recordService.GetAllAsync(); // up_RecordSelectAll
+            vm.Results = allRecords
+                .Where(r => r.Name != null && r.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(r => r.Name)
+                .ToList();
+            vm.Searched = true;
+
+            // Clear previous selection when a new search is performed
+            vm.SelectedRecordId = null;
+            vm.SelectedRecord = null;
+
+            return View("~/Views/Record/Search.cshtml", vm);
         }
     }
 }

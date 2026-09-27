@@ -27,6 +27,9 @@ builder.Services.AddHttpClient<ITrackService, TrackService>(client =>
 builder.Services.AddHttpClient<IStatisticService, StatisticService>(client =>
     client.BaseAddress = apiBase);
 
+builder.Services.AddHttpClient<ITotalService, TotalService>(client =>
+    client.BaseAddress = apiBase);
+
 // -----------------------------------------------------------------------
 // Pipeline
 // -----------------------------------------------------------------------

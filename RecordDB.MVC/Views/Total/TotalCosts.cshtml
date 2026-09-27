@@ -1,0 +1,318 @@
+@model RecordDB.MVC.Models.PaginatedViewModel<RecordDB.Shared.DTOs.TotalDto>
+
+@{
+    ViewData["Title"] = "Artist Totals";
+    var grandTotalDiscs = (int)(ViewBag.GrandTotalDiscs ?? 0);
+    var grandTotalCost  = (decimal)(ViewBag.GrandTotalCost ?? 0m);
+}
+
+@* ── Page Header ── *@
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-pie-chart-fill text-primary"></i>
+            Artist Totals
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill fs-6 fw-semibold">
+                @Model.TotalCount @(Model.TotalCount == 1 ? "artist" : "artists")
+            </span>
+        </h1>
+        <p class="text-muted mb-0 small">
+            Disc counts and total costs per artist across your entire collection.
+        </p>
+    </div>
+
+    <a asp-controller="Record" asp-action="Index" class="btn btn-outline-secondary text-nowrap">
+        <i class="bi bi-arrow-left"></i> Back to Records
+    </a>
+</div>
+
+@* ── Summary Cards ── *@
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-lg-3">
+        <div class="stats-summary-card">
+            <div class="stats-summary-icon bg-primary bg-opacity-10 text-primary mx-auto">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="fw-bold fs-4 text-dark">@Model.TotalCount</div>
+            <div class="text-muted small">Artists</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-3">
+        <div class="stats-summary-card">
+            <div class="stats-summary-icon bg-success bg-opacity-10 text-success mx-auto">
+                <i class="bi bi-vinyl-fill"></i>
+            </div>
+            <div class="fw-bold fs-4 text-dark">@grandTotalDiscs.ToString("N0")</div>
+            <div class="text-muted small">Total Discs</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-3">
+        <div class="stats-summary-card">
+            <div class="stats-summary-icon bg-warning bg-opacity-10 text-warning mx-auto">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="fw-bold fs-4 text-dark">@grandTotalCost.ToString("C")</div>
+            <div class="text-muted small">Total Cost</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-3">
+        <div class="stats-summary-card">
+            <div class="stats-summary-icon bg-info bg-opacity-10 text-info mx-auto">
+                <i class="bi bi-calculator"></i>
+            </div>
+            @{
+                var avgCostPerDisc = grandTotalDiscs > 0 ? grandTotalCost / grandTotalDiscs : 0m;
+            }
+            <div class="fw-bold fs-4 text-dark">@avgCostPerDisc.ToString("C")</div>
+            <div class="text-muted small">Avg Cost / Disc</div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Items.Any())
+{
+    <div class="app-card text-center py-5 px-3">
+        <div class="mb-3">
+            <i class="bi bi-pie-chart text-muted" style="font-size: 3rem;"></i>
+        </div>
+        <h4 class="fw-semibold">No totals found</h4>
+        <p class="text-muted mb-3">No artist cost data is currently available.</p>
+        <a asp-controller="Record" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Records
+        </a>
+    </div>
+}
+else
+{
+    @* ======================================================================
+       Desktop & Laptop View: Clean modern table (Visible on Large screens)
+       ====================================================================== *@
+    <div class="app-card d-none d-lg-block mb-4">
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 55px;">#</th>
+                        <th>Artist</th>
+                        <th class="text-center" style="width: 140px;">Total Discs</th>
+                        <th class="text-end" style="width: 160px;">Total Cost</th>
+                        <th class="text-end" style="width: 150px;">Avg / Disc</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var rowNum = (Model.CurrentPage - 1) * Model.PageSize + 1;
+                    }
+                    @foreach (var item in Model.Items)
+                    {
+                        var avgPerDisc = item.TotalDiscs > 0 ? item.TotalCost / item.TotalDiscs : 0m;
+                        <tr>
+                            <td>
+                                <span class="badge-id">@rowNum</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="artist-avatar" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                        @(string.IsNullOrWhiteSpace(item.Name) ? "?" : item.Name.Substring(0, 1).ToUpper())
+                                    </div>
+                                    <span class="fw-semibold text-dark">@item.Name</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="stats-value-badge">
+                                    <i class="bi bi-vinyl me-1 text-primary" style="font-size: 0.75rem;"></i>@item.TotalDiscs
+                                </span>
+                            </td>
+                            <td class="text-end fw-semibold text-success">
+                                @item.TotalCost.ToString("C")
+                            </td>
+                            <td class="text-end text-muted small">
+                                @avgPerDisc.ToString("C")
+                            </td>
+                        </tr>
+                        rowNum++;
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-light fw-semibold">
+                        <td colspan="2" class="text-end text-muted small text-uppercase" style="letter-spacing: 0.04em;">
+                            Page Total
+                        </td>
+                        <td class="text-center">
+                            <span class="stats-value-badge">
+                                @Model.Items.Sum(i => i.TotalDiscs)
+                            </span>
+                        </td>
+                        <td class="text-end text-success">
+                            @Model.Items.Sum(i => i.TotalCost).ToString("C")
+                        </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    @* ======================================================================
+       Tablet & Mobile View: Responsive Touch Cards (Visible on Mobile/Tablet)
+       ====================================================================== *@
+    <div class="d-lg-none mb-4">
+        <div class="row g-3">
+            @{
+                var cardNum = (Model.CurrentPage - 1) * Model.PageSize + 1;
+            }
+            @foreach (var item in Model.Items)
+            {
+                var avgPerDisc = item.TotalDiscs > 0 ? item.TotalCost / item.TotalDiscs : 0m;
+                <div class="col-12 col-md-6">
+                    <div class="mobile-artist-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="artist-avatar" style="width: 38px; height: 38px; font-size: 0.9rem;">
+                                    @(string.IsNullOrWhiteSpace(item.Name) ? "?" : item.Name.Substring(0, 1).ToUpper())
+                                </div>
+                                <div>
+                                    <h3 class="artist-name mb-0">@item.Name</h3>
+                                </div>
+                            </div>
+                            <span class="badge-id">#@cardNum</span>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 mt-2 pt-2 border-top">
+                            <div class="d-flex align-items-center gap-1">
+                                <i class="bi bi-vinyl text-primary" style="font-size: 0.85rem;"></i>
+                                <span class="small text-muted">Discs:</span>
+                                <span class="stats-value-badge ms-1">@item.TotalDiscs</span>
+                            </div>
+                            <div class="ms-auto text-end">
+                                <div class="fw-bold text-success" style="font-size: 1rem;">@item.TotalCost.ToString("C")</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">@avgPerDisc.ToString("C") / disc</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                cardNum++;
+            }
+        </div>
+    </div>
+
+    @* ======================================================================
+       Responsive Pagination Section
+       ====================================================================== *@
+    @if (Model.TotalPages > 1)
+    {
+        <div class="app-card p-3 mb-4">
+            @* Tablet & Desktop Pagination Bar (Full 15-button window) *@
+            <div class="d-none d-md-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div class="text-muted small">
+                    Showing <strong>@((Model.CurrentPage - 1) * Model.PageSize + 1)</strong> to
+                    <strong>@Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalCount)</strong> of
+                    <strong>@Model.TotalCount</strong> artists
+                </div>
+
+                <nav aria-label="Artist totals pagination desktop">
+                    <ul class="pagination pagination-sm flex-wrap">
+                        @* Single page Prev *@
+                        <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="TotalCosts" asp-route-page="@(Model.CurrentPage - 1)"
+                               aria-label="Previous">
+                                <i class="bi bi-chevron-left"></i> Prev
+                            </a>
+                        </li>
+
+                        @* Previous Block of 15 *@
+                        @if (Model.HasPreviousBlock)
+                        {
+                            <li class="page-item">
+                                <a class="page-link"
+                                   asp-action="TotalCosts" asp-route-page="@Model.PreviousBlockFirstPage"
+                                   title="Go to pages @Model.PreviousBlockFirstPage – @(Model.PreviousBlockFirstPage + Model.BlockSize - 1)">
+                                    &laquo; Prev 15
+                                </a>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&hellip;</span>
+                            </li>
+                        }
+
+                        @* Page number buttons (up to 15 in current block) *@
+                        @for (int p = Model.BlockStart; p <= Model.BlockEnd; p++)
+                        {
+                            <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="TotalCosts" asp-route-page="@p">@p</a>
+                            </li>
+                        }
+
+                        @* Next Block of 15 *@
+                        @if (Model.HasNextBlock)
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">&hellip;</span>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link"
+                                   asp-action="TotalCosts" asp-route-page="@Model.NextBlockFirstPage"
+                                   title="Go to pages @Model.NextBlockFirstPage – @(Math.Min(Model.NextBlockFirstPage + Model.BlockSize - 1, Model.TotalPages))">
+                                    Next 15 &raquo;
+                                </a>
+                            </li>
+                        }
+
+                        @* Single page Next *@
+                        <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="TotalCosts" asp-route-page="@(Model.CurrentPage + 1)"
+                               aria-label="Next">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            @* Mobile Compact Pagination Bar (Screen-friendly touch targets) *@
+            <div class="d-md-none">
+                <div class="mobile-pagination-bar mb-2">
+                    <a class="btn btn-outline-secondary @(!Model.HasPreviousPage ? "disabled" : "")"
+                       asp-action="TotalCosts" asp-route-page="@(Model.CurrentPage - 1)">
+                        <i class="bi bi-chevron-left"></i> Prev
+                    </a>
+
+                    <span class="badge bg-light text-dark border px-3 py-2 fs-6">
+                        Page @Model.CurrentPage of @Model.TotalPages
+                    </span>
+
+                    <a class="btn btn-outline-secondary @(!Model.HasNextPage ? "disabled" : "")"
+                       asp-action="TotalCosts" asp-route-page="@(Model.CurrentPage + 1)">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+
+                @if (Model.TotalBlocks > 1)
+                {
+                    <div class="d-flex justify-content-between gap-2 mt-2 pt-2 border-top">
+                        @if (Model.HasPreviousBlock)
+                        {
+                            <a class="btn btn-sm btn-outline-primary flex-fill"
+                               asp-action="TotalCosts" asp-route-page="@Model.PreviousBlockFirstPage">
+                                &laquo; Prev 15 Pages
+                            </a>
+                        }
+                        @if (Model.HasNextBlock)
+                        {
+                            <a class="btn btn-sm btn-outline-primary flex-fill"
+                               asp-action="TotalCosts" asp-route-page="@Model.NextBlockFirstPage">
+                                Next 15 Pages &raquo;
+                            </a>
+                        }
+                    </div>
+                }
+
+                <div class="text-center text-muted small mt-2">
+                    Artists @((Model.CurrentPage - 1) * Model.PageSize + 1) &ndash; @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalCount) of @Model.TotalCount
+                </div>
+            </div>
+        </div>
+    }
+}

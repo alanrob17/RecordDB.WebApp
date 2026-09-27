@@ -1,0 +1,688 @@
+@model RecordDB.MVC.Models.RecordShowViewModel
+
+@{
+    ViewData["Title"] = $"{Model.Record.Name} — Showcase";
+    var record = Model.Record;
+    var boughtFormatted = record.Bought != DateTime.MinValue && record.Bought != default
+        ? record.Bought.ToString("dd-MMM-yyyy")
+        : "—";
+    var costFormatted = record.Cost.HasValue ? record.Cost.Value.ToString("C") : "—";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+
+        <!-- Top Navigation & Action Bar -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Records
+                </a>
+                <a asp-action="Search" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-search"></i> Record Search
+                </a>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge-id">Record #@record.RecordId</span>
+                @if (record.ArtistId > 0)
+                {
+                    <span class="badge bg-light text-muted border small">Artist ID #@record.ArtistId</span>
+                }
+            </div>
+        </div>
+
+        <!-- ======================================================================
+             HERO SHOWCASE HEADER
+             ====================================================================== -->
+        <div class="app-card mb-4 overflow-hidden shadow-lg border-0"
+             style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);">
+            <div class="p-4 p-md-5 text-white">
+                <div class="row align-items-center g-4">
+                    <!-- Vinyl Showcase Artwork Icon -->
+                    <div class="col-12 col-md-auto text-center text-md-start">
+                        <div class="d-inline-flex position-relative">
+                            <div class="brand-icon shadow-lg"
+                                 style="width: 105px; height: 105px; font-size: 3.25rem; background: radial-gradient(circle, #4338ca 0%, #1e1b4b 70%, #0f172a 100%); border: 3px solid rgba(255,255,255,0.2);">
+                                <i class="bi bi-disc text-white"></i>
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-primary border border-2 border-dark px-2 py-1 fs-7">
+                                @(string.IsNullOrWhiteSpace(record.Media) ? "CD" : record.Media)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Album & Artist Title Info -->
+                    <div class="col-12 col-md text-center text-md-start">
+                        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+                            @if (!string.IsNullOrWhiteSpace(record.Field))
+                            {
+                                <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-3 py-1">
+                                    <i class="bi bi-music-note-beamed me-1"></i>@record.Field
+                                </span>
+                            }
+                            @if (record.Recorded > 0)
+                            {
+                                <span class="badge bg-white bg-opacity-10 text-white border border-light border-opacity-25 rounded-pill px-3 py-1">
+                                    <i class="bi bi-calendar3 me-1"></i>@record.Recorded
+                                </span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(record.Rating))
+                            {
+                                <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1">
+                                    ★ @record.Rating
+                                </span>
+                            }
+                        </div>
+
+                        <h1 class="display-6 fw-bold text-white mb-2 text-break">@record.Name</h1>
+
+                        <div class="fs-5 text-light opacity-90 mb-3">
+                            <span>by </span>
+                            @if (record.ArtistId > 0)
+                            {
+                                <a asp-controller="Artist" asp-action="Details" asp-route-id="@record.ArtistId"
+                                   class="text-info fw-semibold text-decoration-none">
+                                    <i class="bi bi-person-fill me-1"></i>@record.ArtistName
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="fw-semibold">@(string.IsNullOrWhiteSpace(record.ArtistName) ? "Unknown Artist" : record.ArtistName)</span>
+                            }
+                        </div>
+
+                        <!-- Action Buttons: 3 Details Buttons (Artist Bio, Record Review, Track Listing) + Edit Record -->
+                        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start pt-1">
+                            <button type="button"
+                                    id="heroBtnBio"
+                                    class="btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn"
+                                    onclick="showSection('artistBio')">
+                                <i class="bi bi-person-lines-fill me-1 text-info"></i> Artist Biography
+                            </button>
+
+                            <button type="button"
+                                    id="heroBtnReview"
+                                    class="btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn"
+                                    onclick="showSection('recordReview')">
+                                <i class="bi bi-chat-left-quote-fill me-1 text-warning"></i> Record Review
+                            </button>
+
+                            <button type="button"
+                                    id="heroBtnTracks"
+                                    class="btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn"
+                                    onclick="showSection('trackListing')">
+                                <i class="bi bi-music-note-list me-1 text-primary"></i> Track Listing
+                                @if (Model.HasTracks)
+                                {
+                                    <span class="badge bg-primary bg-opacity-75 ms-1">@Model.TrackCount</span>
+                                }
+                            </button>
+
+                            <a asp-action="Edit" asp-route-id="@record.RecordId"
+                               class="btn btn-success btn-sm px-3 shadow-sm rounded-pill ms-auto ms-md-0">
+                                <i class="bi bi-pencil-square me-1"></i> Edit Record
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================================
+             RECORD INFORMATION CARD (With 3 Toggle Buttons & Results Section)
+             ====================================================================== -->
+        <div class="app-card mb-4 shadow-sm" id="recordInfoCard">
+            <!-- Header with Title and the 3 Toggle Buttons -->
+            <div class="app-card-header bg-white border-bottom d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="brand-icon" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                        <i class="bi bi-info-circle-fill"></i>
+                    </span>
+                    <h2 class="h5 mb-0 fw-bold text-dark">Record Information</h2>
+                </div>
+
+                <!-- 3 Buttons next to each other -->
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button"
+                            id="infoBtnBio"
+                            class="btn btn-outline-primary btn-sm showcase-tab-btn"
+                            onclick="showSection('artistBio')">
+                        <i class="bi bi-person-lines-fill me-1"></i> Artist Biography
+                    </button>
+
+                    <button type="button"
+                            id="infoBtnReview"
+                            class="btn btn-outline-warning btn-sm text-dark showcase-tab-btn"
+                            onclick="showSection('recordReview')">
+                        <i class="bi bi-chat-left-quote-fill me-1 text-warning"></i> Record Review
+                    </button>
+
+                    <button type="button"
+                            id="infoBtnTracks"
+                            class="btn btn-outline-info btn-sm text-dark showcase-tab-btn"
+                            onclick="showSection('trackListing')">
+                        <i class="bi bi-music-note-list me-1 text-info"></i> Track Listing
+                        @if (Model.HasTracks)
+                        {
+                            <span class="badge bg-info text-white rounded-pill ms-1">@Model.TrackCount</span>
+                        }
+                    </button>
+                </div>
+            </div>
+
+            <div class="app-card-body p-4">
+                <!-- ==============================================================
+                     THE EXACT FIELDS LAYOUT (Responsive 2-Column Grid)
+                     ============================================================== -->
+                <div class="row g-3 mb-3">
+
+                    <!-- Pair 1: Field | Recorded -->
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-primary bg-opacity-10 text-primary" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                    <i class="bi bi-music-note"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Field</div>
+                                    <div class="fs-5 fw-bold text-dark">
+                                        @(string.IsNullOrWhiteSpace(record.Field) ? "—" : record.Field)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-info bg-opacity-10 text-info" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Recorded</div>
+                                    <div class="fs-5 fw-bold text-dark">
+                                        @(record.Recorded > 0 ? record.Recorded.ToString() : "—")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pair 2: Label | Pressing -->
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-secondary bg-opacity-10 text-secondary" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                    <i class="bi bi-tag-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Label</div>
+                                    <div class="fs-5 fw-bold text-dark">
+                                        @(string.IsNullOrWhiteSpace(record.Label) ? "—" : record.Label)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-primary bg-opacity-10 text-primary" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                    <i class="bi bi-globe-americas"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Pressing</div>
+                                    <div class="fs-5 fw-bold text-dark">
+                                        @(string.IsNullOrWhiteSpace(record.Pressing) ? "—" : record.Pressing)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pair 3: Rating | Discs -->
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-warning bg-opacity-15 text-warning" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Rating</div>
+                                    <div class="fs-5 fw-bold text-dark">
+                                        @if (!string.IsNullOrWhiteSpace(record.Rating))
+                                        {
+                                            <span class="text-warning">★ @record.Rating</span>
+                                        }
+                                        else
+                                        {
+                                            <span>—</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-primary bg-opacity-10 text-primary" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                    <i class="bi bi-collection-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Discs</div>
+                                    <div class="fs-5 fw-bold text-dark">
+                                        @record.Discs
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pair 4: Media | Bought -->
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-info bg-opacity-10 text-info" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                    <i class="bi bi-disc"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Media</div>
+                                    <div class="fs-5 fw-bold text-dark">
+                                        @(string.IsNullOrWhiteSpace(record.Media) ? "CD" : record.Media)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-secondary bg-opacity-10 text-secondary" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                    <i class="bi bi-bag-check-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">Bought</div>
+                                    <div class="fs-5 fw-bold text-dark">
+                                        @boughtFormatted
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Highlighted Row: Cost -->
+                    <div class="col-12">
+                        <div class="p-3 rounded-3 border bg-success bg-opacity-10 border-success border-opacity-25 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="brand-icon bg-success text-white" style="width: 46px; height: 46px; font-size: 1.25rem;">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div>
+                                    <div class="text-success small fw-bold text-uppercase" style="letter-spacing: 0.05em;">Cost</div>
+                                    <div class="fs-3 fw-bold text-success">
+                                        @costFormatted
+                                    </div>
+                                </div>
+                            </div>
+                            @if (record.Bought != DateTime.MinValue && record.Bought != default)
+                            {
+                                <div class="text-muted small">
+                                    Purchased on <span class="fw-semibold text-dark">@boughtFormatted</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ==============================================================
+                     DYNAMIC RESULTS CONTAINER (Displayed At The Bottom of Record Info)
+                     ============================================================== -->
+                <div id="detailsDisplayArea" class="mt-4 pt-3 border-top" style="display: none;">
+
+                    <!-- SECTION 1: ARTIST BIOGRAPHY -->
+                    <div id="sectionArtistBio" class="details-section" style="display: none;">
+                        <div class="card border-primary border-opacity-25 shadow-sm rounded-3">
+                            <div class="card-header bg-primary bg-opacity-10 border-bottom border-primary border-opacity-25 d-flex align-items-center justify-content-between py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-lines-fill text-primary fs-5"></i>
+                                    <h3 class="h6 mb-0 fw-bold text-dark">
+                                        @(string.IsNullOrWhiteSpace(record.ArtistName) ? "Artist Biography" : $"{record.ArtistName} — Biography")
+                                    </h3>
+                                </div>
+                                <button type="button" class="btn-close btn-sm" onclick="closeSections()" aria-label="Close"></button>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+                                    <div class="artist-avatar-lg" style="width: 48px; height: 48px; font-size: 1.15rem;">
+                                        @(string.IsNullOrWhiteSpace(record.ArtistName) ? "?" : record.ArtistName.Trim()[..1].ToUpper())
+                                    </div>
+                                    <div>
+                                        <h4 class="h5 fw-bold mb-0 text-dark">@record.ArtistName</h4>
+                                        @if (record.ArtistId > 0)
+                                        {
+                                            <a asp-controller="Artist" asp-action="Details" asp-route-id="@record.ArtistId"
+                                               class="small text-primary text-decoration-none">
+                                                <i class="bi bi-box-arrow-up-right me-1"></i>View Full Artist Profile
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(record.Biography))
+                                {
+                                    <div class="p-3 bg-light rounded-3 border text-secondary" style="white-space: pre-wrap; line-height: 1.75; font-size: 0.95rem;">
+                                        @record.Biography
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="p-4 bg-light rounded-3 text-center text-muted fst-italic border">
+                                        <i class="bi bi-info-circle me-1"></i> No biography has been recorded for this artist yet.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: RECORD REVIEW -->
+                    <div id="sectionRecordReview" class="details-section" style="display: none;">
+                        <div class="card border-warning border-opacity-50 shadow-sm rounded-3">
+                            <div class="card-header bg-warning bg-opacity-10 border-bottom border-warning border-opacity-50 d-flex align-items-center justify-content-between py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-chat-left-quote-fill text-warning fs-5"></i>
+                                    <h3 class="h6 mb-0 fw-bold text-dark">
+                                        @record.Name — Album Review
+                                    </h3>
+                                </div>
+                                <button type="button" class="btn-close btn-sm" onclick="closeSections()" aria-label="Close"></button>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom flex-wrap gap-2">
+                                    <div>
+                                        <h4 class="h5 fw-bold mb-1 text-dark">@record.Name</h4>
+                                        <div class="text-muted small">by <span class="text-primary fw-medium">@record.ArtistName</span></div>
+                                    </div>
+                                    @if (!string.IsNullOrWhiteSpace(record.Rating))
+                                    {
+                                        <span class="badge bg-warning text-dark fs-6 px-3 py-2 rounded-pill">
+                                            ★ @record.Rating
+                                        </span>
+                                    }
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(record.Review))
+                                {
+                                    <div class="p-3 p-md-4 bg-light rounded-3 border text-secondary" style="white-space: pre-wrap; line-height: 1.8; font-size: 0.95rem;">
+                                        @record.Review
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="p-4 bg-light rounded-3 text-center text-muted fst-italic border">
+                                        <i class="bi bi-info-circle me-1"></i> No album review has been written for this record yet.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: TRACK LISTING -->
+                    <div id="sectionTrackListing" class="details-section" style="display: none;">
+                        <div class="card border-info border-opacity-50 shadow-sm rounded-3">
+                            <div class="card-header bg-info bg-opacity-10 border-bottom border-info border-opacity-50 d-flex align-items-center justify-content-between flex-wrap gap-2 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-music-note-list text-info fs-5"></i>
+                                    <div>
+                                        <h3 class="h6 mb-0 fw-bold text-dark">Track Listing</h3>
+                                        <span class="text-muted small">Loaded via <code>up_GetArtistRecordTracks</code></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    @if (Model.HasTracks)
+                                    {
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-1 rounded-pill">
+                                            @Model.TrackCount @(Model.TrackCount == 1 ? "track" : "tracks")
+                                        </span>
+                                        @if (!string.IsNullOrEmpty(Model.TotalPlayTime))
+                                        {
+                                            <span class="badge bg-light text-dark border px-3 py-1 rounded-pill">
+                                                <i class="bi bi-clock me-1 text-muted"></i>@Model.TotalPlayTime
+                                            </span>
+                                        }
+                                    }
+                                    <button type="button" class="btn-close btn-sm ms-2" onclick="closeSections()" aria-label="Close"></button>
+                                </div>
+                            </div>
+
+                            <div class="card-body p-0">
+                                @if (Model.HasTracks)
+                                {
+                                    var groupedByDisc = Model.Tracks
+                                        .Where(t => t.TrackId.HasValue && t.TrackId.Value > 0)
+                                        .OrderBy(t => t.DiscNo)
+                                        .ThenBy(t => t.TrackNo ?? 0)
+                                        .GroupBy(t => t.DiscNo);
+
+                                    @foreach (var discGroup in groupedByDisc)
+                                    {
+                                        @if (groupedByDisc.Count() > 1 || discGroup.Key > 0)
+                                        {
+                                            <div class="bg-light px-4 py-2 border-bottom fw-bold text-dark d-flex align-items-center justify-content-between">
+                                                <span><i class="bi bi-vinyl text-primary me-2"></i>Disc @discGroup.Key</span>
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border small">@discGroup.Count() tracks</span>
+                                            </div>
+                                        }
+
+                                        <!-- Desktop / Tablet Table (>= md) -->
+                                        <div class="table-responsive d-none d-md-block">
+                                            <table class="table table-custom align-middle mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 65px;" class="text-center">#</th>
+                                                        <th>Track Title</th>
+                                                        <th style="width: 130px;" class="text-end">Duration</th>
+                                                        <th style="width: 140px;" class="text-end">Notes</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var track in discGroup)
+                                                    {
+                                                        var duration = track.TrackLength.HasValue && track.TrackLength.Value > 0
+                                                            ? TimeSpan.FromSeconds(track.TrackLength.Value).ToString(@"mm\:ss")
+                                                            : "—";
+
+                                                        <tr>
+                                                            <td class="text-center">
+                                                                <span class="badge-id">@(track.TrackNo?.ToString() ?? "—")</span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="fw-semibold text-dark d-flex align-items-center gap-2">
+                                                                    <i class="bi bi-music-note-beamed text-primary small"></i>
+                                                                    <span>@track.TrackName</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-end text-muted small fw-medium">
+                                                                @duration
+                                                            </td>
+                                                            <td class="text-end">
+                                                                @if (!string.IsNullOrWhiteSpace(track.Extended))
+                                                                {
+                                                                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 small">
+                                                                        @track.Extended
+                                                                    </span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-muted small">—</span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Mobile Touch List (< md) -->
+                                        <div class="d-md-none list-group list-group-flush">
+                                            @foreach (var track in discGroup)
+                                            {
+                                                var duration = track.TrackLength.HasValue && track.TrackLength.Value > 0
+                                                    ? TimeSpan.FromSeconds(track.TrackLength.Value).ToString(@"mm\:ss")
+                                                    : "";
+
+                                                <div class="list-group-item px-3 py-3 d-flex align-items-center justify-content-between gap-2">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge-id">@(track.TrackNo?.ToString() ?? "—")</span>
+                                                        <div>
+                                                            <div class="fw-semibold text-dark">@track.TrackName</div>
+                                                            @if (!string.IsNullOrWhiteSpace(track.Extended))
+                                                            {
+                                                                <span class="badge bg-info bg-opacity-10 text-info border small" style="font-size: 0.7rem;">
+                                                                    @track.Extended
+                                                                </span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    @if (!string.IsNullOrEmpty(duration))
+                                                    {
+                                                        <span class="badge bg-light text-muted border small">@duration</span>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="text-center py-5 px-3">
+                                        <i class="bi bi-music-note text-muted opacity-50" style="font-size: 2.5rem;"></i>
+                                        <h4 class="h6 fw-semibold text-muted mt-2 mb-1">No Tracks Available</h4>
+                                        <p class="text-muted small mb-0">No track listing has been added for this record yet.</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ======================================================================
+             ACTION FOOTER
+             ====================================================================== -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mb-5">
+            <a asp-action="Index" class="btn btn-outline-secondary order-2 order-sm-1 w-100 w-sm-auto">
+                <i class="bi bi-arrow-left"></i> Back to Record List
+            </a>
+
+            <div class="d-flex gap-2 order-1 order-sm-2 w-100 w-sm-auto justify-content-end">
+                <a asp-action="Edit" asp-route-id="@record.RecordId" class="btn btn-success flex-fill flex-sm-grow-0">
+                    <i class="bi bi-pencil-square"></i> Edit Record
+                </a>
+                <a asp-action="Delete" asp-route-id="@record.RecordId" class="btn btn-danger flex-fill flex-sm-grow-0">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let activeSection = null;
+
+        function showSection(sectionName) {
+            const displayArea = document.getElementById('detailsDisplayArea');
+            const bioSec = document.getElementById('sectionArtistBio');
+            const reviewSec = document.getElementById('sectionRecordReview');
+            const tracksSec = document.getElementById('sectionTrackListing');
+
+            // If clicking the currently active section, toggle it closed
+            if (activeSection === sectionName) {
+                closeSections();
+                return;
+            }
+
+            activeSection = sectionName;
+
+            // Hide all sections first
+            bioSec.style.display = 'none';
+            reviewSec.style.display = 'none';
+            tracksSec.style.display = 'none';
+
+            // Show container
+            displayArea.style.display = 'block';
+
+            // Reset button active styles
+            resetButtonStyles();
+
+            // Show selected section and mark active buttons
+            if (sectionName === 'artistBio') {
+                bioSec.style.display = 'block';
+                highlightButton('heroBtnBio', 'btn-info', 'btn-outline-light');
+                highlightButton('infoBtnBio', 'btn-primary', 'btn-outline-primary');
+            } else if (sectionName === 'recordReview') {
+                reviewSec.style.display = 'block';
+                highlightButton('heroBtnReview', 'btn-warning', 'btn-outline-light');
+                highlightButton('infoBtnReview', 'btn-warning', 'btn-outline-warning');
+            } else if (sectionName === 'trackListing') {
+                tracksSec.style.display = 'block';
+                highlightButton('heroBtnTracks', 'btn-primary', 'btn-outline-light');
+                highlightButton('infoBtnTracks', 'btn-info', 'btn-outline-info');
+            }
+
+            // Smooth scroll into view
+            displayArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function closeSections() {
+            activeSection = null;
+            const displayArea = document.getElementById('detailsDisplayArea');
+            if (displayArea) displayArea.style.display = 'none';
+
+            document.getElementById('sectionArtistBio').style.display = 'none';
+            document.getElementById('sectionRecordReview').style.display = 'none';
+            document.getElementById('sectionTrackListing').style.display = 'none';
+
+            resetButtonStyles();
+        }
+
+        function highlightButton(btnId, addClass, removeClass) {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.classList.remove(removeClass);
+                btn.classList.add(addClass);
+            }
+        }
+
+        function resetButtonStyles() {
+            const heroBio = document.getElementById('heroBtnBio');
+            if (heroBio) { heroBio.className = 'btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn'; }
+
+            const heroReview = document.getElementById('heroBtnReview');
+            if (heroReview) { heroReview.className = 'btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn'; }
+
+            const heroTracks = document.getElementById('heroBtnTracks');
+            if (heroTracks) { heroTracks.className = 'btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn'; }
+
+            const infoBio = document.getElementById('infoBtnBio');
+            if (infoBio) { infoBio.className = 'btn btn-outline-primary btn-sm showcase-tab-btn'; }
+
+            const infoReview = document.getElementById('infoBtnReview');
+            if (infoReview) { infoReview.className = 'btn btn-outline-warning btn-sm text-dark showcase-tab-btn'; }
+
+            const infoTracks = document.getElementById('infoBtnTracks');
+            if (infoTracks) { infoTracks.className = 'btn btn-outline-info btn-sm text-dark showcase-tab-btn'; }
+        }
+    </script>
+}
