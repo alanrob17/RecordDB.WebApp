@@ -108,6 +108,97 @@ namespace RecordDB.MVC.Controllers
         }
 
         // -----------------------------------------------------------------------
+        // GetRecords — specialized record list by show filter or artist
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        [Route("Record/GetRecords/{id?}")]
+        [Route("Records/GetRecords/{id?}")]
+        [Route("GetRecords/{id?}")]
+        public async Task<IActionResult> GetRecords(string? id, string? show, int? artistId, int page = 1)
+        {
+            const int pageSize = 20;
+            List<ArtistRecordDto> all;
+            string headerTitle;
+
+            if (artistId.HasValue && artistId.Value > 0)
+            {
+                // Task<Artist?> SelectAsync(int artistId) via up_ArtistSelectById
+                var artist = await artistService.GetByIdAsync(artistId.Value);
+                if (artist is null) return NotFound();
+
+                var artistName = artist.Name ?? $"{artist.FirstName} {artist.LastName}".Trim();
+                all = (await recordService.GetByArtistNameAsync(artistName)).ToList();
+                headerTitle = $"Records by {artistName}";
+
+                ViewBag.ArtistId   = artistId.Value;
+                ViewBag.ArtistName = artistName;
+            }
+            else
+            {
+                // Task<List<ArtistRecordDto>> SelectRecordsShowAsync(string show) via up_RecordSelectShowCore
+                var showParam = !string.IsNullOrWhiteSpace(id) 
+                    ? id.Trim() 
+                    : (!string.IsNullOrWhiteSpace(show) ? show.Trim() : "all");
+
+                all = (await recordService.GetRecordsShowAsync(showParam)).ToList();
+                headerTitle = GetHeaderTitle(showParam);
+
+                ViewBag.Show = showParam;
+            }
+
+            var totalCount = all.Count;
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            var vm = new PaginatedViewModel<ArtistRecordDto>
+            {
+                Items       = all.Skip((page - 1) * pageSize).Take(pageSize),
+                CurrentPage = page,
+                TotalPages  = totalPages,
+                TotalCount  = totalCount,
+                PageSize    = pageSize
+            };
+
+            ViewBag.HeaderTitle = headerTitle;
+            return View("~/Views/Record/GetRecords.cshtml", vm);
+        }
+
+        private static string GetHeaderTitle(string show)
+        {
+            return show.ToLowerInvariant() switch
+            {
+                "all"            => "All Records and CD's",
+                "cd"             => "All CD's",
+                "records"        => "All Records",
+                "dvds"           => "All DVD's",
+                "blurays"        => "All Blurays",
+                "2022"           => "All Records bought in 2022",
+                "2021"           => "All Records bought in 2021",
+                "2020"           => "All Records bought in 2020",
+                "2019"           => "All Records bought in 2019",
+                "2018"           => "All Records bought in 2018",
+                "2017"           => "All Records bought in 2017",
+                "1111"           => "Indispensible Records",
+                "rock"           => "Rock Albums",
+                "blues"          => "Blues Albums",
+                "jazz"           => "Jazz Albums",
+                "classical"      => "Classical Albums",
+                "soundtrack"     => "Soundtrack Albums",
+                "country"        => "Country Albums",
+                "rockdesc"       => "Rock Albums by date",
+                "bluesdesc"      => "Blues Albums by date",
+                "jazzdesc"       => "Jazz Albums by date",
+                "classicaldesc"  => "Classical Albums by date",
+                "soundtrackdesc" => "Soundtrack Albums by date",
+                "countrydesc"    => "Country Albums by date",
+                _ when int.TryParse(show, out var year) && year >= 1900 && year <= 2100 => $"All Records bought in {year}",
+                _ => $"{show} Records"
+            };
+        }
+
+        // -----------------------------------------------------------------------
         // Details — single record by ID
         // -----------------------------------------------------------------------
 

@@ -199,12 +199,19 @@
     <footer class="app-footer py-3 mt-auto">
         <div class="container text-center text-md-start d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
             <div>
-                &copy; 2026 <strong>RecordDB</strong> &mdash; All Rights Reserved
+                &copy; 2026 <strong>RecordDB</strong>
             </div>
             <div>
                 <a asp-area="" asp-controller="Artist" asp-action="Index" class="text-muted text-decoration-none">
-                    <i class="bi bi-collection-play me-1"></i>Artist Catalogue
+                    <i class="bi bi-collection-play me-1"></i>Artist List
+                </a> &mdash; 
+                <a asp-area="" asp-controller="Record" asp-action="Index" class="text-muted text-decoration-none">
+                    <i class="bi bi-collection-play me-1"></i>Record List
+                </a> &mdash; 
+                <a asp-area="" asp-controller="Track" asp-action="Search" class="text-muted text-decoration-none">
+                    <i class="bi bi-collection-play me-1"></i>Track List
                 </a>
+
             </div>
         </div>
     </footer>

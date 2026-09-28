@@ -67,11 +67,13 @@ namespace RecordDB.API.Controllers
         /// <summary>Returns all records filtered by the show flag.</summary>
         /// <param name="show">Show flag value (e.g. "Y" or "N").</param>
         /// <response code="200">Matching records.</response>
+        [HttpGet("show")]
         [HttpGet("show/{show}")]
         [ProducesResponseType(typeof(IEnumerable<ArtistRecordDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ArtistRecordDto>>> GetByShow(string show)
+        public async Task<ActionResult<IEnumerable<ArtistRecordDto>>> GetByShow(string? show = "all")
         {
-            var records = await _recordRepository.SelectRecordsShowAsync(show);
+            var filter = string.IsNullOrWhiteSpace(show) ? "all" : show;
+            var records = await _recordRepository.SelectRecordsShowAsync(filter);
             return Ok(records);
         }
 

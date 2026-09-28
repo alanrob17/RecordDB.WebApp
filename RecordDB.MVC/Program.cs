@@ -48,6 +48,26 @@ app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "records-plural",
+    pattern: "Records/{action=Index}/{id?}",
+    defaults: new { controller = "Record" });
+
+app.MapControllerRoute(
+    name: "artists-plural",
+    pattern: "Artists/{action=Index}/{id?}",
+    defaults: new { controller = "Artist" });
+
+app.MapControllerRoute(
+    name: "discs-plural",
+    pattern: "Discs/{action=Index}/{id?}",
+    defaults: new { controller = "Disc" });
+
+app.MapControllerRoute(
+    name: "tracks-plural",
+    pattern: "Tracks/{action=Index}/{id?}",
+    defaults: new { controller = "Track" });
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 

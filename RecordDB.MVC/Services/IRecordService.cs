@@ -9,6 +9,7 @@ namespace RecordDB.MVC.Services
     {
         Task<IEnumerable<ArtistRecordDto>> GetAllAsync();
         Task<ArtistRecordDto?>             GetByIdAsync(int id);
+        Task<IEnumerable<ArtistRecordDto>> GetRecordsShowAsync(string show);
         Task<IEnumerable<ArtistRecordDto>> GetByArtistNameAsync(string name);
         Task<IEnumerable<ArtistRecordDto>> GetByYearAsync(int year);
         Task<int>                          CreateAsync(CreateRecordDto dto);

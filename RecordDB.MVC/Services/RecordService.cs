@@ -18,6 +18,9 @@ namespace RecordDB.MVC.Services
         public async Task<ArtistRecordDto?> GetByIdAsync(int id)
             => await http.GetFromJsonAsync<ArtistRecordDto>($"api/record/{id}");
 
+        public async Task<IEnumerable<ArtistRecordDto>> GetRecordsShowAsync(string show)
+            => await http.GetFromJsonAsync<IEnumerable<ArtistRecordDto>>($"api/record/show/{Uri.EscapeDataString(show)}") ?? [];
+
         public async Task<IEnumerable<ArtistRecordDto>> GetByArtistNameAsync(string name)
             => await http.GetFromJsonAsync<IEnumerable<ArtistRecordDto>>($"api/record/by-artist/{Uri.EscapeDataString(name)}") ?? [];
 
