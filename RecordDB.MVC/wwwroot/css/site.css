@@ -266,6 +266,32 @@ body {
     box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
 
+.btn-outline-success {
+    color: var(--app-success-hover);
+    border-color: #a7f3d0;
+    background-color: var(--app-success-light);
+}
+
+.btn-outline-success:hover, .btn-outline-success:focus {
+    background-color: var(--app-success);
+    border-color: var(--app-success);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-outline-danger {
+    color: var(--app-danger);
+    border-color: #fecaca;
+    background-color: var(--app-danger-light);
+}
+
+.btn-outline-danger:hover, .btn-outline-danger:focus {
+    background-color: var(--app-danger);
+    border-color: var(--app-danger);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
 .btn-danger {
     background-color: var(--app-danger);
     border-color: var(--app-danger);
@@ -596,5 +622,333 @@ body {
 
     .stats-summary-card {
         padding: 1rem 0.75rem;
+    }
+}
+
+/* ==========================================================================
+   Home / Portal View Styles (Views/Home/Index.cshtml)
+   ========================================================================== */
+.home-hero {
+    width: 80%;
+    margin: 0 auto 1.75rem auto;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);
+    color: #ffffff;
+    border-radius: var(--app-radius-lg);
+    padding: 1.75rem 2rem;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25), 0 8px 10px -6px rgba(15, 23, 42, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.home-hero::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.08) 50%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+@media (min-width: 768px) {
+    .home-hero {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.home-hero .hero-brand-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    z-index: 1;
+}
+
+.home-hero .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(99, 102, 241, 0.18);
+    border: 1px solid rgba(129, 140, 248, 0.3);
+    color: #c7d2fe;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    width: fit-content;
+}
+
+.home-hero h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+    .home-hero h1 {
+        font-size: 2.15rem;
+    }
+}
+
+.home-hero h1 span {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.home-hero .hero-subtitle {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin: 0;
+    max-width: 580px;
+}
+
+/* Time & Date display */
+.home-hero .hero-time-widget {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: var(--app-radius);
+    padding: 0.85rem 1.35rem;
+    text-align: right;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    min-width: 210px;
+    z-index: 1;
+}
+
+@media (max-width: 767.98px) {
+    .home-hero .hero-time-widget {
+        width: 100%;
+        text-align: left;
+    }
+}
+
+.clock-display {
+    font-family: 'JetBrains Mono', 'SF Mono', Consolas, 'Courier New', monospace;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    text-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+}
+
+.date-display {
+    font-size: 0.825rem;
+    color: #cbd5e1;
+    font-weight: 500;
+    margin-top: 0.2rem;
+}
+
+/* Home Card */
+.home-card {
+    width: 80%;
+    margin: 0 auto 2.5rem auto;
+    background: var(--app-card-bg);
+    border: 1px solid var(--app-border);
+    border-radius: var(--app-radius-lg);
+    box-shadow: var(--app-shadow);
+    overflow: hidden;
+}
+
+.home-card-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--app-border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+@media (min-width: 576px) {
+    .home-card-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.home-card-header .header-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--app-text-main);
+    margin: 0;
+}
+
+.home-card-header .filter-box {
+    position: relative;
+    min-width: 250px;
+}
+
+.home-card-header .filter-box .form-control {
+    padding-left: 2.15rem;
+    font-size: 0.875rem;
+    border-radius: var(--app-radius-sm);
+}
+
+.home-card-header .filter-box i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--app-text-muted);
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+/* Home Table */
+.home-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 0;
+}
+
+.home-table thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.5rem;
+    border-bottom: 1px solid var(--app-border);
+    white-space: nowrap;
+}
+
+.home-table thead th:first-child {
+    width: 30%;
+    min-width: 220px;
+}
+
+.home-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.home-table tbody tr:not(.spacer-row):not(.category-header-row):hover {
+    background-color: #f8fafc;
+}
+
+.home-table tbody td {
+    padding: 0.8rem 1.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.925rem;
+}
+
+.home-table tbody td:first-child a {
+    color: var(--app-primary);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.6rem;
+    margin-left: -0.6rem;
+    border-radius: var(--app-radius-sm);
+    transition: all 0.18s ease;
+}
+
+.home-table tbody td:first-child a i.row-icon {
+    font-size: 1rem;
+    opacity: 0.85;
+}
+
+.home-table tbody td:first-child a .arrow-indicator {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.18s ease;
+    font-size: 0.8rem;
+    color: var(--app-primary);
+}
+
+.home-table tbody td:first-child a:hover {
+    color: var(--app-primary-hover);
+    background-color: var(--app-primary-light);
+    transform: translateX(2px);
+}
+
+.home-table tbody td:first-child a:hover .arrow-indicator {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.home-table tbody td:last-child {
+    color: #475569;
+    line-height: 1.45;
+}
+
+/* Category header / Section row */
+.home-table .category-header-row td {
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 0.775rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.65rem 1.5rem;
+    border-top: 1px solid var(--app-border);
+    border-bottom: 1px solid var(--app-border);
+}
+
+.home-table .category-header-row td i {
+    color: var(--app-primary);
+    font-size: 0.85rem;
+    margin-right: 0.4rem;
+}
+
+/* Spacer rows between sections */
+.home-table .spacer-row td {
+    padding: 0.4rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    height: 12px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 767.98px) {
+    .home-hero,
+    .home-card {
+        width: 100%;
+    }
+
+    .home-hero {
+        padding: 1.35rem 1.25rem;
+    }
+    
+    .home-table thead th,
+    .home-table tbody td {
+        padding: 0.75rem 1rem;
+    }
+
+    .home-table thead th:first-child {
+        min-width: 180px;
+    }
+
+    .home-table tbody td:first-child a {
+        margin-left: -0.35rem;
+        padding: 0.35rem 0.45rem;
     }
 }

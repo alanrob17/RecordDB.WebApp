@@ -24,7 +24,7 @@
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" name="search" value="@Model.SearchTerm" class="form-control border-start-0" 
-                       placeholder="Search artists..." style="min-width: 170px;" />
+                       placeholder="Search artists..." style="min-width: 300px;" />
                 @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
                 {
                     <a asp-action="Index" class="btn btn-outline-secondary border-start-0" title="Clear search">
@@ -124,11 +124,11 @@ else
                                     <i class="bi bi-eye"></i> Details
                                 </a>
                                 <a asp-action="Edit" asp-route-id="@artist.ArtistId"
-                                   class="btn btn-sm btn-success" title="Edit artist">
+                                   class="btn btn-sm btn-outline-success" title="Edit artist">
                                     <i class="bi bi-pencil"></i> Edit
                                 </a>
                                 <a asp-action="Delete" asp-route-id="@artist.ArtistId"
-                                   class="btn btn-sm btn-danger" title="Delete artist">
+                                   class="btn btn-sm btn-outline-danger" title="Delete artist">
                                     <i class="bi bi-trash"></i> Delete
                                 </a>
                             </td>
@@ -187,11 +187,11 @@ else
                                 <i class="bi bi-eye"></i> Details
                             </a>
                             <a asp-action="Edit" asp-route-id="@artist.ArtistId"
-                               class="btn btn-success">
+                               class="btn btn-outline-success">
                                 <i class="bi bi-pencil"></i> Edit
                             </a>
                             <a asp-action="Delete" asp-route-id="@artist.ArtistId"
-                               class="btn btn-danger">
+                               class="btn btn-outline-danger">
                                 <i class="bi bi-trash"></i> Delete
                             </a>
                         </div>

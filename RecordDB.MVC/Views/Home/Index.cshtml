@@ -1,8 +1,591 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "RecordDB";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Banner with Live Clock -->
+<div class="home-hero">
+    <div class="hero-brand-group">
+        <div class="hero-pill">
+            <i class="bi bi-disc-fill"></i> Music Management
+        </div>
+        <h1><span>Record</span>DB Management System</h1>
+        <p class="hero-subtitle">Music catalogue index, archive search, and collection maintenance directory.</p>
+    </div>
+    <div class="hero-time-widget">
+        <div class="clock-display" id="clock">--:--</div>
+        <div class="date-display" id="date-display"></div>
+    </div>
 </div>
+
+<!-- Navigation Portal Table -->
+<div class="home-card">
+    <div class="home-card-header">
+        <h2 class="header-title">
+            <i class="bi bi-compass text-primary"></i> System Directory
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill fs-7 fw-semibold" id="optionCount">40 options</span>
+        </h2>
+        <div class="filter-box">
+            <i class="bi bi-search"></i>
+            <input type="search" id="menuFilter" class="form-control form-control-sm" placeholder="Filter options (e.g. Rock, Search, Artist)..." autocomplete="off" />
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="home-table" id="portalTable">
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Core Navigation -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-folder2-open"></i> Core Navigation</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Artist/">
+                            <i class="bi bi-people-fill row-icon"></i>
+                            <span>Artists</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Artists, organised by artist names.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/">
+                            <i class="bi bi-vinyl-fill row-icon"></i>
+                            <span>Records</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Records, organised by artist and date recorded.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Track/">
+                            <i class="bi bi-music-note-list row-icon"></i>
+                            <span>Tracks</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Tracks, organised by artist.</td>
+                </tr>
+
+                <!-- Media Formats -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-disc"></i> Media Formats &amp; Collections</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/cd">
+                            <i class="bi bi-disc text-primary row-icon"></i>
+                            <span>View All CD Titles</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all CD titles, organised by artist and date recorded.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/all">
+                            <i class="bi bi-collection-play-fill text-primary row-icon"></i>
+                            <span>View All Titles</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all titles (Records and CDs), organised by artist and date recorded.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/records">
+                            <i class="bi bi-vinyl text-dark row-icon"></i>
+                            <span>View All Records</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all vinyl record titles, organised by artist and date recorded.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/dvds">
+                            <i class="bi bi-film text-danger row-icon"></i>
+                            <span>View All DVD's</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all DVD titles, organised by date bought.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/blurays">
+                            <i class="bi bi-camera-reels-fill text-info row-icon"></i>
+                            <span>View All Blurays</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Bluray titles, organised by date bought.</td>
+                </tr>
+
+                <!-- Search & Discovery -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-search"></i> Search &amp; Discovery</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Artist/Search">
+                            <i class="bi bi-person-bounding-box text-primary row-icon"></i>
+                            <span>Search for an Artist</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Search and view all of an Artist's record titles.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/Search">
+                            <i class="bi bi-search text-primary row-icon"></i>
+                            <span>Search for a Record</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Search and filter all Record titles by name.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Artist/NoBiography">
+                            <i class="bi bi-file-earmark-person text-secondary row-icon"></i>
+                            <span>No Biography</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all artists without a biography.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Artist/ArtistList">
+                            <i class="bi bi-card-checklist text-primary row-icon"></i>
+                            <span>Record List</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View a combined list of all Artists and Records.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/RecordReviews">
+                            <i class="bi bi-chat-square-quote-fill text-info row-icon"></i>
+                            <span>Record Reviews</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all record reviews.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Track/Search">
+                            <i class="bi bi-search text-primary row-icon"></i>
+                            <span>Search for a Track</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Search and filter a Track titles by name.</td>
+                </tr>
+
+                <!-- Purchase Archives -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-calendar3"></i> Purchase Archives (By Year Bought)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/2022">
+                            <i class="bi bi-calendar-check text-secondary row-icon"></i>
+                            <span>View 2022 Titles</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all albums bought in 2022.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/2021">
+                            <i class="bi bi-calendar-check text-secondary row-icon"></i>
+                            <span>View 2021 Titles</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all albums bought in 2021.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/2020">
+                            <i class="bi bi-calendar-check text-secondary row-icon"></i>
+                            <span>View 2020 Titles</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all album bought in 2020.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/2019">
+                            <i class="bi bi-calendar-check text-secondary row-icon"></i>
+                            <span>View 2019 Titles</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all albums bought in 2019.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/2018">
+                            <i class="bi bi-calendar-check text-secondary row-icon"></i>
+                            <span>View 2018 Titles</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all albums bought in 2018.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/2017">
+                            <i class="bi bi-calendar-check text-secondary row-icon"></i>
+                            <span>View 2017 Titles</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all albums bought in 2017.</td>
+                </tr>
+
+                <!-- Recordings & Ratings -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-star-fill text-warning"></i> Curated &amp; Ratings</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/Recorded">
+                            <i class="bi bi-clock-history text-secondary row-icon"></i>
+                            <span>Year Recorded</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all albums recorded in a particular year.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/1111">
+                            <i class="bi bi-star-fill text-warning row-icon"></i>
+                            <span>View Four Star</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all albums with an indispensable (<span class="text-warning">★★★★</span>) rating.</td>
+                </tr>
+
+                <!-- Musical Genres (A - Z) -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-music-note-beamed"></i> Musical Genres (Alphabetical)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Rock">
+                            <i class="bi bi-soundwave text-primary row-icon"></i>
+                            <span>Rock</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Rock albums.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Blues">
+                            <i class="bi bi-soundwave text-primary row-icon"></i>
+                            <span>Blues</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Blues albums.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Jazz">
+                            <i class="bi bi-soundwave text-primary row-icon"></i>
+                            <span>Jazz</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Jazz albums.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Classical">
+                            <i class="bi bi-soundwave text-primary row-icon"></i>
+                            <span>Classical</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Classical albums.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Soundtrack">
+                            <i class="bi bi-soundwave text-primary row-icon"></i>
+                            <span>Soundtrack</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Soundtrack albums.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Country">
+                            <i class="bi bi-soundwave text-primary row-icon"></i>
+                            <span>Country</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Country albums.</td>
+                </tr>
+
+                <!-- Musical Genres (Chronological) -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-sort-numeric-down"></i> Musical Genres (Ordered by Recorded Date)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Rockdesc">
+                            <i class="bi bi-calendar-range text-info row-icon"></i>
+                            <span>Rock by Date</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Rock albums ordered by Recorded date.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Bluesdesc">
+                            <i class="bi bi-calendar-range text-info row-icon"></i>
+                            <span>Blues by Date</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Blues albums ordered by Recorded date.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Jazzdesc">
+                            <i class="bi bi-calendar-range text-info row-icon"></i>
+                            <span>Jazz by Date</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Jazz albums ordered by Recorded date.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Classicaldesc">
+                            <i class="bi bi-calendar-range text-info row-icon"></i>
+                            <span>Classical by Date</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Classical albums ordered by Recorded date.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Soundtrackdesc">
+                            <i class="bi bi-calendar-range text-info row-icon"></i>
+                            <span>Soundtrack by Date</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Soundtrack albums ordered by Recorded date.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/GetRecords/Countrydesc">
+                            <i class="bi bi-calendar-range text-info row-icon"></i>
+                            <span>Country by Date</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View all Country albums ordered by Recorded date.</td>
+                </tr>
+
+                <!-- Artist Maintenance -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-people-fill"></i> Artist Catalogue Maintenance</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Artist/Create">
+                            <i class="bi bi-person-plus-fill text-success row-icon"></i>
+                            <span>Add New Artist</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Add a new artist to the RecordDB.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Artist/EditArtist">
+                            <i class="bi bi-person-gear text-primary row-icon"></i>
+                            <span>Edit Artist</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Edit an existing artist in the RecordDB.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Artist/DeleteArtist">
+                            <i class="bi bi-person-x-fill text-danger row-icon"></i>
+                            <span>Delete Artist</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Delete an artist from the RecordDB.</td>
+                </tr>
+
+                <!-- Record Maintenance -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-vinyl"></i> Record Catalogue Maintenance</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/Create">
+                            <i class="bi bi-plus-circle-fill text-success row-icon"></i>
+                            <span>Add New Record</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Add a new record to the RecordDB.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/EditRecord">
+                            <i class="bi bi-pencil-square text-primary row-icon"></i>
+                            <span>Edit Record</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Edit an existing record in the RecordDB.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Record/DeleteRecord">
+                            <i class="bi bi-trash-fill text-danger row-icon"></i>
+                            <span>Delete Record</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Delete an artist's record from the RecordDB.</td>
+                </tr>
+
+                <!-- Analytics & Statistics -->
+                <tr class="category-header-row">
+                    <td colspan="2"><i class="bi bi-bar-chart-line-fill"></i> Analytics &amp; Statistics</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Total/TotalCosts">
+                            <i class="bi bi-calculator-fill text-primary row-icon"></i>
+                            <span>Artist Totals</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>Calculate total discs and costs for each artist.</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="~/Statistics">
+                            <i class="bi bi-graph-up-arrow text-primary row-icon"></i>
+                            <span>Statistics</span>
+                            <i class="bi bi-chevron-right arrow-indicator"></i>
+                        </a>
+                    </td>
+                    <td>View collection statistics for the RecordDB.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function() {
+            // Live Clock and Date
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+
+            function pad(n) { return n < 10 ? '0' + n : n; }
+
+            function tick() {
+                const now = new Date();
+                let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+                const ampm = h >= 12 ? 'pm' : 'am';
+                h = h % 12 || 12;
+                const clockEl = document.getElementById('clock');
+                const dateEl = document.getElementById('date-display');
+                if (clockEl) {
+                    clockEl.textContent = pad(h) + ':' + pad(m) + ':' + pad(s) + ' ' + ampm;
+                }
+                if (dateEl) {
+                    dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' +
+                        months[now.getMonth()] + ' ' + now.getFullYear();
+                }
+            }
+
+            tick();
+            setInterval(tick, 1000);
+
+            // Real-time Option Filter
+            const filterInput = document.getElementById('menuFilter');
+            const portalTable = document.getElementById('portalTable');
+            const optionCountEl = document.getElementById('optionCount');
+
+            if (filterInput && portalTable) {
+                const rows = portalTable.querySelectorAll('tbody tr');
+
+                filterInput.addEventListener('input', function() {
+                    const query = this.value.toLowerCase().trim();
+                    let visibleOptions = 0;
+                    let currentHeader = null;
+                    let currentHeaderHasMatches = false;
+
+                    rows.forEach(function(row) {
+                        if (row.classList.contains('category-header-row')) {
+                            // Close previous header if it had no matches
+                            if (currentHeader && !currentHeaderHasMatches && query !== '') {
+                                currentHeader.style.display = 'none';
+                            }
+                            currentHeader = row;
+                            currentHeaderHasMatches = false;
+                            row.style.display = '';
+                        } else {
+                            const text = row.textContent.toLowerCase();
+                            const match = query === '' || text.includes(query);
+                            row.style.display = match ? '' : 'none';
+                            if (match) {
+                                visibleOptions++;
+                                currentHeaderHasMatches = true;
+                            }
+                        }
+                    });
+
+                    // Handle the last category header
+                    if (currentHeader && !currentHeaderHasMatches && query !== '') {
+                        currentHeader.style.display = 'none';
+                    }
+
+                    if (optionCountEl) {
+                        optionCountEl.textContent = visibleOptions + (visibleOptions === 1 ? ' option' : ' options');
+                    }
+                });
+            }
+        })();
+    </script>
+}
