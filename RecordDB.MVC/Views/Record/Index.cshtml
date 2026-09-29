@@ -134,12 +134,12 @@ else
             <table class="table table-custom align-middle">
                 <thead>
                     <tr>
-                        <th style="width: 75px;">ID</th>
-                        <th>Album Title</th>
                         <th>Artist</th>
+                        <th>Album Title</th>
                         <th>Year</th>
-                        <th>Format</th>
-                        <th>Label</th>
+                        <th>Field</th>
+                        <th>Media</th>
+                        <th>Discs</th>
                         <th>Rating</th>
                         <th class="text-end" style="width: 250px;">Actions</th>
                     </tr>
@@ -148,19 +148,6 @@ else
                     @foreach (var record in Model.Items)
                     {
                         <tr>
-                            <td>
-                                <span class="badge-id">#@record.RecordId</span>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="brand-icon" style="width: 32px; height: 32px; font-size: 0.85rem;">
-                                        <i class="bi bi-vinyl"></i>
-                                    </div>
-                                    <div class="fw-semibold text-dark">
-                                        @record.Name
-                                    </div>
-                                </div>
-                            </td>
                             <td>
                                 @if (record.ArtistId > 0)
                                 {
@@ -175,6 +162,13 @@ else
                                 }
                             </td>
                             <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="fw-semibold text-dark">
+                                        @record.Name
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
                                 @if (record.Recorded > 0)
                                 {
                                     <span class="badge bg-light text-dark border">@record.Recorded</span>
@@ -186,15 +180,18 @@ else
                             </td>
                             <td>
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border small">
-                                    @(string.IsNullOrWhiteSpace(record.Media) ? "CD" : record.Media)
-                                    @if (record.Discs > 1)
-                                    {
-                                        <span> • @record.Discs Discs</span>
-                                    }
+                                    @(string.IsNullOrWhiteSpace(record.Field) ? "&mdash;" : record.Field)
                                 </span>
                             </td>
-                            <td class="text-muted small">
-                                @(string.IsNullOrWhiteSpace(record.Label) ? "—" : record.Label)
+                            <td>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border small">
+                                    @(string.IsNullOrWhiteSpace(record.Media) ? "&mdash;" : record.Media)
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fw-semibold">
+                                    @record.Discs @(record.Discs == 1 ? "Disc" : "Discs")
+                                </span>
                             </td>
                             <td>
                                 @if (!string.IsNullOrWhiteSpace(record.Rating))

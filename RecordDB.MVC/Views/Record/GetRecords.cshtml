@@ -54,11 +54,11 @@ else
                     <tr>
                         <th>Artist</th>
                         <th>Album Title</th>
-                        <th>Field</th>
                         <th>Recorded</th>
-                        <th>Rating</th>
+                        <th>Field</th>
                         <th>Media</th>
                         <th>Discs</th>
+                        <th>Rating</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -86,6 +86,16 @@ else
                                 </div>
                             </td>
                             <td>
+                                @if (record.Recorded > 0)
+                                {
+                                    <span class="badge bg-light text-dark border">@record.Recorded</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                            <td>
                                 @if (!string.IsNullOrWhiteSpace(record.Field))
                                 {
                                     <span class="badge bg-secondary bg-opacity-10 text-secondary border">
@@ -98,14 +108,14 @@ else
                                 }
                             </td>
                             <td>
-                                @if (record.Recorded > 0)
-                                {
-                                    <span class="badge bg-light text-dark border">@record.Recorded</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">—</span>
-                                }
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border small">
+                                    @(string.IsNullOrWhiteSpace(record.Media) ? "&mdash;" : record.Media)
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fw-semibold">
+                                    @record.Discs @(record.Discs == 1 ? "Disc" : "Discs")
+                                </span>
                             </td>
                             <td>
                                 @if (!string.IsNullOrWhiteSpace(record.Rating))
@@ -121,14 +131,6 @@ else
                                 {
                                     <span class="text-muted">—</span>
                                 }
-                            </td>
-                            <td class="text-muted small">
-                                @(string.IsNullOrWhiteSpace(record.Media) ? "—" : record.Media)
-                            </td>
-                            <td>
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fw-semibold">
-                                    @record.Discs @(record.Discs == 1 ? "Disc" : "Discs")
-                                </span>
                             </td>
                         </tr>
                     }
