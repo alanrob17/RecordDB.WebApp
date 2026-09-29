@@ -24,5 +24,7 @@ namespace RecordDB.Shared.DTOs
         public decimal? Cost       { get; set; }
         public string?  CoverName  { get; set; }
         public string?  Review     { get; set; }
+
+        public ArtistDto Artist => new() { ArtistId = ArtistId, Name = ArtistName ?? $"{FirstName} {LastName}".Trim() };
     }
 }

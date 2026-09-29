@@ -20,6 +20,8 @@ namespace RecordDB.API.Models
         public decimal?  Cost     { get; set; }
         public string?  CoverName { get; set; }
         public string?  Review    { get; set; }
+        public Artist?  Artist    { get; set; }
+        public string?  ArtistName { get; set; }
 
         public override string ToString() =>
             $"Record Id: {RecordId}, Name: {Name}, Recorded: {Recorded}, Media: {Media}";

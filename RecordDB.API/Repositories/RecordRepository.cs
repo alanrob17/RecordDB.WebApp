@@ -83,6 +83,38 @@ namespace RecordDB.API.Repositories
             return records.ToList();
         }
 
+        public async Task<List<Record>> SelectRecordReviews()
+        {
+            var sproc = "up_SelectRecordReviews2";
+            var records = (await _db.GetData<Record, dynamic>(sproc, new { })).ToList();
+
+            var allRecords = await SelectAsync();
+            var lookup = allRecords
+                .Where(r => !string.IsNullOrEmpty(r.Name) && !string.IsNullOrEmpty(r.ArtistName))
+                .GroupBy(r => (r.ArtistName!.Trim().ToLowerInvariant(), r.Name!.Trim().ToLowerInvariant()))
+                .ToDictionary(g => g.Key, g => g.First());
+
+            foreach (var r in records)
+            {
+                var artistName = r.ArtistName ?? r.Artist?.Name ?? string.Empty;
+                var recordName = r.Name ?? string.Empty;
+                var key = (artistName.Trim().ToLowerInvariant(), recordName.Trim().ToLowerInvariant());
+
+                if (lookup.TryGetValue(key, out var match))
+                {
+                    r.RecordId = match.RecordId;
+                    r.ArtistId = match.ArtistId;
+                }
+
+                if (r.Artist == null)
+                {
+                    r.Artist = new Artist { ArtistId = r.ArtistId, Name = artistName };
+                }
+            }
+
+            return records;
+        }
+
         public async Task<List<ArtistRecordDto>> GetRecordsByArtistNameAsync(string artistName)
         {
             if (string.IsNullOrWhiteSpace(artistName))

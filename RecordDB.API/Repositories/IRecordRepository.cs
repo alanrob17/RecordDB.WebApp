@@ -26,6 +26,9 @@ namespace RecordDB.API.Repositories
         /// <summary>Returns all records that have a review, as a slim DTO.</summary>
         Task<List<RecordReviewDto>> SelectRecordReviewsAsync();
 
+        /// <summary>Returns records with reviews using up_SelectRecordReviews2.</summary>
+        Task<List<Record>> SelectRecordReviews();
+
         /// <summary>Returns all records by artist name.</summary>
         Task<List<ArtistRecordDto>> GetRecordsByArtistNameAsync(string name);
 

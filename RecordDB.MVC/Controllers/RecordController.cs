@@ -446,5 +446,48 @@ namespace RecordDB.MVC.Controllers
 
             return View("~/Views/Record/Recorded.cshtml", vm);
         }
+
+        // -----------------------------------------------------------------------
+        // RecordReviews — list all records with reviews, displaying Artist.Name, Record.Name, Record.Review
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        [Route("Record/RecordReviews")]
+        [Route("Records/RecordReviews")]
+        [Route("RecordReviews")]
+        public async Task<IActionResult> RecordReviews(int page = 1, string? search = null)
+        {
+            const int pageSize = 20;
+
+            // Calls api/record/record-reviews -> RecordRepository.SelectRecordReviews() -> up_SelectRecordReviews2
+            var all = (await recordService.GetRecordReviewsAsync()).ToList();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim();
+                all = all.Where(r =>
+                    (r.Name != null && r.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (r.ArtistName != null && r.ArtistName.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (r.Review != null && r.Review.Contains(term, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+            }
+
+            var totalCount = all.Count;
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            var vm = new PaginatedViewModel<ArtistRecordDto>
+            {
+                Items       = all.Skip((page - 1) * pageSize).Take(pageSize),
+                SearchTerm  = search,
+                CurrentPage = page,
+                TotalPages  = totalPages,
+                TotalCount  = totalCount,
+                PageSize    = pageSize
+            };
+
+            return View("~/Views/Record/RecordReviews.cshtml", vm);
+        }
     }
 }

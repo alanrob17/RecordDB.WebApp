@@ -27,6 +27,9 @@ namespace RecordDB.MVC.Services
         public async Task<IEnumerable<ArtistRecordDto>> GetByYearAsync(int year)
             => await http.GetFromJsonAsync<IEnumerable<ArtistRecordDto>>($"api/record/by-year/{year}") ?? [];
 
+        public async Task<IEnumerable<ArtistRecordDto>> GetRecordReviewsAsync()
+            => await http.GetFromJsonAsync<IEnumerable<ArtistRecordDto>>("api/record/record-reviews") ?? [];
+
         // -----------------------------------------------------------------------
         // POST
         // -----------------------------------------------------------------------

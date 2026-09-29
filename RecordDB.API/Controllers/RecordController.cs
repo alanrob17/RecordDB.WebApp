@@ -109,6 +109,24 @@ namespace RecordDB.API.Controllers
             return Ok(records);
         }
 
+        /// <summary>Returns all records with reviews using up_SelectRecordReviews2.</summary>
+        /// <response code="200">List of records with artist and review.</response>
+        [HttpGet("record-reviews")]
+        [ProducesResponseType(typeof(IEnumerable<ArtistRecordDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ArtistRecordDto>>> GetRecordReviews()
+        {
+            var records = await _recordRepository.SelectRecordReviews();
+            var dtos = records.Select(r => new ArtistRecordDto
+            {
+                RecordId   = r.RecordId,
+                ArtistId   = r.ArtistId,
+                ArtistName = r.Artist?.Name ?? r.ArtistName,
+                Name       = r.Name,
+                Review     = r.Review
+            });
+            return Ok(dtos);
+        }
+
         /// <summary>Returns all records that are missing a review.</summary>
         /// <response code="200">Records without reviews.</response>
         [HttpGet("no-reviews")]
