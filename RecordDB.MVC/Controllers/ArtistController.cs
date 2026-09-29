@@ -159,5 +159,48 @@ namespace RecordDB.MVC.Controllers
             vm.Searched = true;
             return View(vm);
         }
+
+        // -----------------------------------------------------------------------
+        // NoBiography — list artists who don't have a biography
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        [Route("Artist/NoBiography")]
+        [Route("NoBiography")]
+        public async Task<IActionResult> NoBiography(int page = 1, string? search = null)
+        {
+            const int pageSize = 20;
+
+            // Calls api/artist/no-biography -> ArtistRepository.GetArtistsWithNoBiographyAsync() -> up_SelectArtistsWithNoBiography
+            var all = (await artistService.GetWithNoBiographyAsync()).ToList();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim();
+                all = all.Where(a =>
+                    (a.Name != null && a.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (a.FirstName != null && a.FirstName.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (a.LastName != null && a.LastName.Contains(term, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+            }
+
+            var totalCount = all.Count;
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            // Clamp page to valid range
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            var vm = new PaginatedViewModel<ArtistDto>
+            {
+                Items       = all.Skip((page - 1) * pageSize).Take(pageSize),
+                SearchTerm  = search,
+                CurrentPage = page,
+                TotalPages  = totalPages,
+                TotalCount  = totalCount,
+                PageSize    = pageSize
+            };
+
+            return View("~/Views/Artist/NoBiography.cshtml", vm);
+        }
     }
 }

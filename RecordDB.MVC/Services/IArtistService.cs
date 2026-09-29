@@ -10,6 +10,7 @@ namespace RecordDB.MVC.Services
         Task<IEnumerable<ArtistDto>> GetAllAsync();
         Task<ArtistDto?>             GetByIdAsync(int id);
         Task<IEnumerable<ArtistDto>> SearchAsync(string name);
+        Task<IEnumerable<ArtistDto>> GetWithNoBiographyAsync();
         Task<int>                    CreateAsync(CreateArtistDto dto);
         Task                         UpdateAsync(int id, UpdateArtistDto dto);
         Task                         DeleteAsync(int id);

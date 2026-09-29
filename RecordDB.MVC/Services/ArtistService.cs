@@ -21,6 +21,9 @@ namespace RecordDB.MVC.Services
         public async Task<IEnumerable<ArtistDto>> SearchAsync(string name)
             => await http.GetFromJsonAsync<IEnumerable<ArtistDto>>($"api/artist/search/{Uri.EscapeDataString(name)}") ?? [];
 
+        public async Task<IEnumerable<ArtistDto>> GetWithNoBiographyAsync()
+            => await http.GetFromJsonAsync<IEnumerable<ArtistDto>>("api/artist/no-biography") ?? [];
+
         // -----------------------------------------------------------------------
         // POST
         // -----------------------------------------------------------------------
