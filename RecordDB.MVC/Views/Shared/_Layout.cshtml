@@ -58,10 +58,15 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center gap-2" asp-area="" asp-controller="Track" asp-action="Search">
-                                        <i class="bi bi-music-note-list text-primary"></i> Track Search
-                                    </a>
-                                </li>
+                                     <a class="dropdown-item d-flex align-items-center gap-2" asp-area="" asp-controller="Track" asp-action="Search">
+                                         <i class="bi bi-music-note-list text-primary"></i> Track Search
+                                     </a>
+                                 </li>
+                                 <li>
+                                     <a class="dropdown-item d-flex align-items-center gap-2" asp-area="" asp-controller="Record" asp-action="Recorded">
+                                         <i class="bi bi-calendar-event text-primary"></i> Recorded by Year
+                                     </a>
+                                 </li>
                             </ul>
                         </li>
 
@@ -106,6 +111,11 @@
                                 <li>
                                     <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="Create">
                                         <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Record
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="Recorded">
+                                        <i class="bi bi-calendar-event me-2 text-primary"></i>Recorded by Year
                                     </a>
                                 </li>
                                 <li>

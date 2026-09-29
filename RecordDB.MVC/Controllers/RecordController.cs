@@ -403,5 +403,48 @@ namespace RecordDB.MVC.Controllers
 
             return View("~/Views/Record/Search.cshtml", vm);
         }
+
+        // -----------------------------------------------------------------------
+        // Recorded — search and list records by recording year
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        [Route("Record/Recorded")]
+        [Route("Records/Recorded")]
+        [Route("Recorded")]
+        public async Task<IActionResult> Recorded(string? year, int page = 1)
+        {
+            const int pageSize = 20;
+            List<ArtistRecordDto> records = [];
+            int? parsedYear = null;
+
+            if (!string.IsNullOrWhiteSpace(year) && int.TryParse(year.Trim(), out var y) && y > 0)
+            {
+                parsedYear = y;
+                // Task<List<ArtistRecordDto>> GetRecordsByYearAsync(int recorded) via up_GetRecordsByYear
+                var result = await recordService.GetByYearAsync(y);
+                records = result.ToList();
+            }
+
+            var totalCount = records.Count;
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            var vm = new PaginatedViewModel<ArtistRecordDto>
+            {
+                Items       = records.Skip((page - 1) * pageSize).Take(pageSize),
+                SearchTerm  = parsedYear?.ToString() ?? year?.Trim(),
+                CurrentPage = page,
+                TotalPages  = totalPages,
+                TotalCount  = totalCount,
+                PageSize    = pageSize
+            };
+
+            ViewBag.Year = parsedYear;
+            ViewBag.Searched = !string.IsNullOrWhiteSpace(year);
+
+            return View("~/Views/Record/Recorded.cshtml", vm);
+        }
     }
 }
