@@ -22,7 +22,7 @@
 
     <div class="d-flex gap-2">
         <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
-            <i class="bi bi-house-door"></i> Home Portal
+            <i class="bi bi-house-door"></i> Home
         </a>
     </div>
 </div>
@@ -80,9 +80,6 @@ else
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="brand-icon" style="width: 30px; height: 30px; font-size: 0.8rem;">
-                                        <i class="bi bi-vinyl"></i>
-                                    </div>
                                     <div class="fw-semibold text-dark">
                                         @record.Name
                                     </div>
@@ -113,8 +110,11 @@ else
                             <td>
                                 @if (!string.IsNullOrWhiteSpace(record.Rating))
                                 {
-                                    <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50">
-                                        ★ @record.Rating
+                                    var ratingDisplay = record.Rating.Contains('*')
+                                        ? record.Rating.Replace("*", "★")
+                                        : (record.Rating.Contains('★') ? record.Rating : $"★ {record.Rating}");
+                                    <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50" style="letter-spacing: 1px;">
+                                        @ratingDisplay
                                     </span>
                                 }
                                 else

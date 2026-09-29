@@ -42,16 +42,14 @@ namespace RecordDB.MVC.Controllers
 
             var all = (await recordService.GetAllAsync()).ToList();
 
-            // Optional search by album name, artist name, or label
+            // Optional search by album name, artist name, or recorded year
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var term = search.Trim();
                 all = all.Where(r => 
                     (r.Name != null && r.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
                     (r.ArtistName != null && r.ArtistName.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
-                    (r.Label != null && r.Label.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
-                    (r.Field != null && r.Field.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
-                    r.Recorded.ToString().Contains(term)
+                    (r.Recorded > 0 && r.Recorded.ToString().Contains(term))
                 ).ToList();
             }
 

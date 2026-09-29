@@ -72,7 +72,7 @@
                     <i class="bi bi-search"></i>
                 </span>
                 <input type="text" name="search" value="@Model.SearchTerm" class="form-control border-start-0" 
-                       placeholder="Search title, artist, label..." style="min-width: 190px;" />
+                       placeholder="Search title, artist, recorded..." style="min-width: 190px;" />
                 @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
                 {
                     <a asp-action="Index" class="btn btn-outline-secondary border-start-0" title="Clear search">
@@ -199,8 +199,11 @@ else
                             <td>
                                 @if (!string.IsNullOrWhiteSpace(record.Rating))
                                 {
-                                    <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50">
-                                        ★ @record.Rating
+                                    var ratingDisplay = record.Rating.Contains('*')
+                                        ? record.Rating.Replace("*", "★")
+                                        : (record.Rating.Contains('★') ? record.Rating : $"★ {record.Rating}");
+                                    <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50" style="letter-spacing: 1px;">
+                                        @ratingDisplay
                                     </span>
                                 }
                                 else
@@ -269,8 +272,11 @@ else
                             </span>
                             @if (!string.IsNullOrWhiteSpace(record.Rating))
                             {
-                                <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50">
-                                    ★ @record.Rating
+                                var ratingDisplay = record.Rating.Contains('*')
+                                    ? record.Rating.Replace("*", "★")
+                                    : (record.Rating.Contains('★') ? record.Rating : $"★ {record.Rating}");
+                                <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50" style="letter-spacing: 1px;">
+                                    @ratingDisplay
                                 </span>
                             }
                             @if (!string.IsNullOrWhiteSpace(record.Label))
