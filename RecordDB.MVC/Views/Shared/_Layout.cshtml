@@ -70,99 +70,117 @@
                             </ul>
                         </li>
 
-                        <!-- Maintenance DropDown -->
+                        <!-- Maintenance DropDown (nested submenus) -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="maintenanceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-gear-fill"></i> Maintenance
                             </a>
-                            <ul class="dropdown-menu shadow" aria-labelledby="maintenanceDropdown" style="min-width: 230px; max-height: 80vh; overflow-y: auto;">
-                                <!-- Artists -->
-                                <li><h6 class="dropdown-header"><i class="bi bi-people-fill me-1"></i> Artists</h6></li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="Index">
-                                        <i class="bi bi-list-ul me-2 text-primary"></i>Artist List
+                            <ul class="dropdown-menu shadow" aria-labelledby="maintenanceDropdown" style="min-width: 200px;">
+
+                                <!-- Artists submenu -->
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle d-flex align-items-center gap-2" href="#" role="button">
+                                        <i class="bi bi-people-fill text-primary"></i>
+                                        <span>Artists</span>
                                     </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="Create">
-                                        <i class="bi bi-plus-circle me-2 text-primary"></i>Create an Artist
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="EditArtist">
-                                        <i class="bi bi-pencil me-2 text-primary"></i>Edit an Artist
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="DeleteArtist">
-                                        <i class="bi bi-trash me-2 text-danger"></i>Delete an Artist
-                                    </a>
+                                    <ul class="dropdown-menu shadow">
+                                        <li><h6 class="dropdown-header"><i class="bi bi-people-fill me-1"></i> Artists</h6></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="Index">
+                                                <i class="bi bi-list-ul me-2 text-primary"></i>Artist List
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="Create">
+                                                <i class="bi bi-plus-circle me-2 text-primary"></i>Create an Artist
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="EditArtist">
+                                                <i class="bi bi-pencil me-2 text-primary"></i>Edit an Artist
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Artist" asp-action="DeleteArtist">
+                                                <i class="bi bi-trash me-2 text-danger"></i>Delete an Artist
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
 
-                                <li><hr class="dropdown-divider"></li>
-
-                                <!-- Records -->
-                                <li><h6 class="dropdown-header"><i class="bi bi-disc me-1"></i> Records</h6></li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="Index">
-                                        <i class="bi bi-list-ul me-2 text-primary"></i>Record List
+                                <!-- Records submenu -->
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle d-flex align-items-center gap-2" href="#" role="button">
+                                        <i class="bi bi-disc text-primary"></i>
+                                        <span>Records</span>
                                     </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="Create">
-                                        <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Record
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="EditRecord">
-                                        <i class="bi bi-pencil me-2 text-primary"></i>Edit a Record
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="DeleteRecord">
-                                        <i class="bi bi-trash me-2 text-danger"></i>Delete a Record
-                                    </a>
-                                </li>
-
-                                <li><hr class="dropdown-divider"></li>
-
-                                <!-- Discs -->
-                                <li><h6 class="dropdown-header"><i class="bi bi-vinyl-fill me-1"></i> Discs</h6></li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Disc" asp-action="Index">
-                                        <i class="bi bi-list-ul me-2 text-primary"></i>Disc List
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Disc" asp-action="Create">
-                                        <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Disc
-                                    </a>
+                                    <ul class="dropdown-menu shadow">
+                                        <li><h6 class="dropdown-header"><i class="bi bi-disc me-1"></i> Records</h6></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="Index">
+                                                <i class="bi bi-list-ul me-2 text-primary"></i>Record List
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="Create">
+                                                <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Record
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="EditRecord">
+                                                <i class="bi bi-pencil me-2 text-primary"></i>Edit a Record
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Record" asp-action="DeleteRecord">
+                                                <i class="bi bi-trash me-2 text-danger"></i>Delete a Record
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
 
-                                <li><hr class="dropdown-divider"></li>
+                                <!-- Discs submenu -->
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle d-flex align-items-center gap-2" href="#" role="button">
+                                        <i class="bi bi-vinyl-fill text-primary"></i>
+                                        <span>Discs</span>
+                                    </a>
+                                    <ul class="dropdown-menu shadow">
+                                        <li><h6 class="dropdown-header"><i class="bi bi-vinyl-fill me-1"></i> Discs</h6></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Disc" asp-action="Index">
+                                                <i class="bi bi-list-ul me-2 text-primary"></i>Disc List
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Disc" asp-action="Create">
+                                                <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Disc
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
 
-                                <!-- Tracks -->
-                                <li><h6 class="dropdown-header"><i class="bi bi-music-note-list me-1"></i> Tracks</h6></li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Track" asp-action="Index">
-                                        <i class="bi bi-list-ul me-2 text-primary"></i>Track List
+                                <!-- Tracks submenu -->
+                                <li class="dropdown-submenu">
+                                    <a class="dropdown-item dropdown-toggle d-flex align-items-center gap-2" href="#" role="button">
+                                        <i class="bi bi-music-note-list text-primary"></i>
+                                        <span>Tracks</span>
                                     </a>
+                                    <ul class="dropdown-menu shadow">
+                                        <li><h6 class="dropdown-header"><i class="bi bi-music-note-list me-1"></i> Tracks</h6></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Track" asp-action="Index">
+                                                <i class="bi bi-list-ul me-2 text-primary"></i>Track List
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Track" asp-action="Create">
+                                                <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Track
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Track" asp-action="Create">
-                                        <i class="bi bi-plus-circle me-2 text-primary"></i>Create a Track
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
-                                        <i class="bi bi-pencil me-2 text-muted"></i>Edit a Track
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
-                                        <i class="bi bi-trash me-2 text-muted"></i>Delete a Track
-                                    </a>
-                                </li>
+
                             </ul>
                         </li>
 
@@ -224,6 +242,32 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Nested submenu click-toggle (for mobile / touch where :hover is unavailable)
+        document.querySelectorAll('.dropdown-submenu > .dropdown-toggle').forEach(function (toggle) {
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var parentLi = this.closest('.dropdown-submenu');
+                var isShown = parentLi.classList.contains('show');
+                // Close all sibling submenus
+                parentLi.closest('ul').querySelectorAll('.dropdown-submenu.show').forEach(function (el) {
+                    el.classList.remove('show');
+                });
+                if (!isShown) {
+                    parentLi.classList.add('show');
+                }
+            });
+        });
+        // Close submenus when the parent dropdown closes
+        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function (dd) {
+            dd.addEventListener('hidden.bs.dropdown', function () {
+                document.querySelectorAll('.dropdown-submenu.show').forEach(function (el) {
+                    el.classList.remove('show');
+                });
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

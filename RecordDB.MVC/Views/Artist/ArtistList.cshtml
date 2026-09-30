@@ -1,0 +1,252 @@
+@model IEnumerable<RecordDB.Shared.DTOs.ArtistDto>
+@using RecordDB.Shared.DTOs
+
+@{
+    ViewData["Title"] = "Artist & Record List";
+
+    var recordsByArtist = ViewBag.RecordsByArtist as Dictionary<int, List<ArtistRecordDto>>
+                          ?? new Dictionary<int, List<ArtistRecordDto>>();
+
+    var artistList = Model.ToList();
+    var totalRecords = recordsByArtist.Values.Sum(r => r.Count);
+}
+
+<!-- ======================================================================
+     Page Header
+     ====================================================================== -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 mb-1 fw-bold text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-people text-primary"></i> Artist &amp; Record List
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill fs-6 fw-semibold">
+                @artistList.Count @(artistList.Count == 1 ? "artist" : "artists")
+            </span>
+        </h1>
+        <p class="text-muted mb-0 small">
+            Complete catalogue — @totalRecords @(totalRecords == 1 ? "record" : "records") across @artistList.Count @(artistList.Count == 1 ? "artist" : "artists").
+        </p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-people me-1"></i>Artist List
+        </a>
+        <a asp-controller="Record" asp-action="Index" class="btn btn-outline-primary">
+            <i class="bi bi-disc me-1"></i>Record List
+        </a>
+    </div>
+</div>
+
+@if (!artistList.Any())
+{
+    <div class="app-card text-center py-5 px-3">
+        <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+        <h4 class="fw-semibold mt-3">No artists found</h4>
+        <p class="text-muted">Your artist catalogue is currently empty.</p>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Add New Artist
+        </a>
+    </div>
+}
+else
+{
+    <!-- ======================================================================
+         DESKTOP view — table with expandable rows (lg+)
+         ====================================================================== -->
+    <div class="d-none d-lg-flex justify-content-center">
+        <div style="width: 60%; max-width: 800px;">
+        @foreach (var artist in artistList)
+        {
+            var records = recordsByArtist.TryGetValue(artist.ArtistId, out var r) ? r : new List<ArtistRecordDto>();
+
+            <div class="app-card mb-3">
+                <!-- Artist header row -->
+                <div class="artist-list-header d-flex align-items-center justify-content-between px-4 py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-person-fill text-primary fs-5"></i>
+                        <a href="/Artists/Details/@artist.ArtistId"
+                           class="fw-bold fs-5 text-decoration-none artist-list-name">
+                            @artist.Name
+                        </a>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill small ms-1">
+                            @records.Count @(records.Count == 1 ? "record" : "records")
+                        </span>
+                    </div>
+                </div>
+
+                @if (records.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-custom table-sm align-middle mb-0">
+                            <tbody>
+                                @foreach (var record in records)
+                                {
+                                    <tr>
+                                        <td class="ps-5">
+                                            <a href="/Records/Details/@record.RecordId"
+                                               class="btn btn-light btn-sm text-decoration-none record-list-link fw-semibold border">
+                                                @record.Recorded - @record.Name (@(string.IsNullOrEmpty(record.Media) ? "—" : record.Media))
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="px-5 py-2 text-muted fst-italic small border-top">No records found for this artist.</div>
+                }
+            </div>
+        }
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         TABLET view — two-column cards (md only)
+         ====================================================================== -->
+    <div class="d-none d-md-block d-lg-none">
+        <div class="row g-3">
+            @foreach (var artist in artistList)
+            {
+                var records = recordsByArtist.TryGetValue(artist.ArtistId, out var r) ? r : new List<ArtistRecordDto>();
+
+                <div class="col-md-6">
+                    <div class="app-card h-100">
+                        <div class="artist-list-header px-3 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-person-fill text-primary"></i>
+                            <a href="/Artists/Details/@artist.ArtistId"
+                               class="fw-bold text-decoration-none artist-list-name flex-grow-1">
+                                @artist.Name
+                            </a>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill small">
+                                @records.Count
+                            </span>
+                        </div>
+                        <ul class="list-unstyled mb-0 record-list-tablet">
+                            @if (records.Any())
+                            {
+                                @foreach (var record in records)
+                                {
+                                    <li class="d-flex align-items-baseline gap-2 px-3 py-1 border-top record-list-item-tablet">
+                                        <span class="text-muted small record-year-tablet">@record.Recorded</span>
+                                        <a href="/Records/Details/@record.RecordId"
+                                           class="text-decoration-none record-list-link flex-grow-1 small">
+                                            @record.Name
+                                        </a>
+                                        @if (!string.IsNullOrEmpty(record.Media))
+                                        {
+                                            <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 text-nowrap small">
+                                                @record.Media
+                                            </span>
+                                        }
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="px-3 py-2 text-muted fst-italic small border-top">No records.</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         MOBILE view — stacked single-column cards (xs/sm)
+         ====================================================================== -->
+    <div class="d-md-none">
+        @foreach (var artist in artistList)
+        {
+            var records = recordsByArtist.TryGetValue(artist.ArtistId, out var r) ? r : new List<ArtistRecordDto>();
+
+            <div class="app-card mb-3">
+                <div class="artist-list-header px-3 py-2 d-flex align-items-center gap-2">
+                    <i class="bi bi-person-fill text-primary"></i>
+                    <a href="/Artists/Details/@artist.ArtistId"
+                       class="fw-semibold text-decoration-none artist-list-name flex-grow-1">
+                        @artist.Name
+                    </a>
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill small">
+                        @records.Count
+                    </span>
+                </div>
+                <ul class="list-unstyled mb-0">
+                    @if (records.Any())
+                    {
+                        @foreach (var record in records)
+                        {
+                            <li class="d-flex align-items-start gap-2 px-3 py-2 border-top">
+                                <span class="text-muted small text-nowrap mt-1" style="min-width: 38px;">@record.Recorded</span>
+                                <div class="flex-grow-1">
+                                    <a href="/Records/Details/@record.RecordId"
+                                       class="text-decoration-none record-list-link d-block">
+                                        @record.Name
+                                    </a>
+                                    @if (!string.IsNullOrEmpty(record.Media))
+                                    {
+                                        <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 small mt-1">
+                                            @record.Media
+                                        </span>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="px-3 py-2 text-muted fst-italic small border-top">No records.</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+<style>
+    /* Artist section header */
+    .artist-list-header {
+        background: linear-gradient(90deg, rgba(79,70,229,0.06) 0%, transparent 100%);
+        border-bottom: 1px solid var(--app-border);
+    }
+
+    .artist-list-name {
+        color: var(--app-primary);
+        transition: color 0.15s ease;
+    }
+
+    .artist-list-name:hover {
+        color: var(--app-primary-hover);
+        text-decoration: underline !important;
+    }
+
+    /* Record links */
+    .record-list-link {
+        color: var(--app-text-main);
+        transition: color 0.15s ease;
+    }
+
+    .record-list-link:hover {
+        color: var(--app-primary);
+        text-decoration: underline !important;
+    }
+
+    /* Tablet list rows */
+    .record-list-item-tablet:hover {
+        background-color: var(--app-primary-light);
+    }
+
+    .record-year-tablet {
+        min-width: 36px;
+        text-align: right;
+    }
+
+    /* Desktop table rows */
+    .table-custom tbody tr:hover td {
+        background-color: var(--app-primary-light);
+    }
+</style>
+}

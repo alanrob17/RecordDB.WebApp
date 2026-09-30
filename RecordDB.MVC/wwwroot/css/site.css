@@ -164,6 +164,40 @@ body {
     opacity: 1;
 }
 
+/* Nested submenu support */
+.app-navbar .dropdown-submenu {
+    position: relative;
+}
+
+.app-navbar .dropdown-submenu > .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -0.5rem;
+    margin-left: 0.125rem;
+    border-radius: var(--app-radius);
+    display: none;
+}
+
+.app-navbar .dropdown-submenu.show > .dropdown-menu {
+    display: block;
+}
+
+/* Hide the default Bootstrap caret on submenu toggles; use a right-chevron instead */
+.app-navbar .dropdown-submenu > .dropdown-toggle::after {
+    display: inline-block;
+    margin-left: auto;
+    vertical-align: middle;
+    content: "\f285"; /* bi-chevron-right */
+    font-family: "bootstrap-icons";
+    border: none;
+    font-size: 0.7rem;
+}
+
+.app-navbar .dropdown-submenu:hover > .dropdown-menu,
+.app-navbar .dropdown-submenu:focus-within > .dropdown-menu {
+    display: block;
+}
+
 /* ==========================================================================
    Modern Cards & Containers
    ========================================================================== */

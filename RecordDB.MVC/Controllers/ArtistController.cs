@@ -10,8 +10,10 @@ namespace RecordDB.MVC.Controllers
     /// MVC controller for Artist CRUD operations.
     /// All data access goes through <see cref="IArtistService"/> (typed HttpClient → RecordDB.API).
     /// </summary>
-    public class ArtistController(IArtistService artistService) : Controller
+    public class ArtistController(IArtistService artistService, IRecordService recordService) : Controller
     {
+        private readonly IArtistService _artistService = artistService;
+        private readonly IRecordService _recordService = recordService;
         // -----------------------------------------------------------------------
         // Index — list all artists
         // -----------------------------------------------------------------------
@@ -21,8 +23,8 @@ namespace RecordDB.MVC.Controllers
             const int pageSize = 20;
 
             var all = string.IsNullOrWhiteSpace(search)
-                ? (await artistService.GetAllAsync()).ToList()
-                : (await artistService.SearchAsync(search.Trim())).ToList();
+                ? (await _artistService.GetAllAsync()).ToList()
+                : (await _artistService.SearchAsync(search.Trim())).ToList();
 
             var totalCount = all.Count;
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
@@ -49,9 +51,38 @@ namespace RecordDB.MVC.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var artist = await artistService.GetByIdAsync(id);
+            var artist = await _artistService.GetByIdAsync(id);
             if (artist is null) return NotFound();
             return View(artist);
+        }
+
+        // -----------------------------------------------------------------------
+        // ArtistList — all artists with their records
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        [Route("Artist/ArtistList")]
+        [Route("Artists/ArtistList")]
+        [Route("ArtistList")]
+        public async Task<IActionResult> ArtistList()
+        {
+            // Fetch artists and records in parallel for performance
+            var artistsTask = _artistService.GetAllAsync();
+            var recordsTask = _recordService.GetAllAsync();
+
+            await Task.WhenAll(artistsTask, recordsTask);
+
+            var artists = (await artistsTask).ToList();
+            var allRecords = (await recordsTask).ToList();
+
+            // Group records by ArtistId for O(1) lookup in the view
+            var recordsByArtist = allRecords
+                .Where(r => r.ArtistId > 0)
+                .GroupBy(r => r.ArtistId)
+                .ToDictionary(g => g.Key, g => g.OrderBy(r => r.Recorded).ThenBy(r => r.Name).ToList());
+
+            ViewBag.RecordsByArtist = recordsByArtist;
+            return View(artists);
         }
 
         // -----------------------------------------------------------------------
@@ -65,7 +96,7 @@ namespace RecordDB.MVC.Controllers
         {
             if (!ModelState.IsValid) return View(dto);
 
-            await artistService.CreateAsync(dto);
+            await _artistService.CreateAsync(dto);
             TempData["Success"] = "Artist created successfully.";
             return RedirectToAction(nameof(Index));
         }
@@ -76,7 +107,7 @@ namespace RecordDB.MVC.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var artist = await artistService.GetByIdAsync(id);
+            var artist = await _artistService.GetByIdAsync(id);
             if (artist is null) return NotFound();
 
             var dto = new UpdateArtistDto
@@ -96,7 +127,7 @@ namespace RecordDB.MVC.Controllers
             if (id != dto.ArtistId) return BadRequest();
             if (!ModelState.IsValid) return View(dto);
 
-            await artistService.UpdateAsync(id, dto);
+            await _artistService.UpdateAsync(id, dto);
             TempData["Success"] = "Artist updated successfully.";
             return RedirectToAction(nameof(Index));
         }
@@ -107,7 +138,7 @@ namespace RecordDB.MVC.Controllers
 
         private async Task PopulateArtistListDropdownAsync(int? selectedArtistId = null, string placeholder = "-- Select an Artist to Edit --")
         {
-            var artists = (await artistService.GetArtistListAsync()).ToList();
+            var artists = (await _artistService.GetArtistListAsync()).ToList();
 
             var selectList = artists.Select(a =>
             {
@@ -137,7 +168,7 @@ namespace RecordDB.MVC.Controllers
                 return View(new UpdateArtistDto());
             }
 
-            var artist = await artistService.GetByIdAsync(id.Value);
+            var artist = await _artistService.GetByIdAsync(id.Value);
             if (artist is null)
             {
                 TempData["Error"] = $"Artist with ID #{id.Value} not found.";
@@ -174,7 +205,7 @@ namespace RecordDB.MVC.Controllers
 
             try
             {
-                await artistService.UpdateAsync(dto.ArtistId, dto);
+                await _artistService.UpdateAsync(dto.ArtistId, dto);
                 TempData["Success"] = $"Artist '{dto.Name}' updated successfully.";
                 return RedirectToAction(nameof(EditArtist), new { id = dto.ArtistId });
             }
@@ -192,7 +223,7 @@ namespace RecordDB.MVC.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var artist = await artistService.GetByIdAsync(id);
+            var artist = await _artistService.GetByIdAsync(id);
             if (artist is null) return NotFound();
             return View(artist);
         }
@@ -200,7 +231,7 @@ namespace RecordDB.MVC.Controllers
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await artistService.DeleteAsync(id);
+            await _artistService.DeleteAsync(id);
             TempData["Success"] = "Artist deleted.";
             return RedirectToAction(nameof(Index));
         }
@@ -219,7 +250,7 @@ namespace RecordDB.MVC.Controllers
                 return View(new ArtistDto());
             }
 
-            var artist = await artistService.GetByIdAsync(id.Value);
+            var artist = await _artistService.GetByIdAsync(id.Value);
             if (artist is null)
             {
                 TempData["Error"] = $"Artist with ID #{id.Value} not found.";
@@ -240,10 +271,10 @@ namespace RecordDB.MVC.Controllers
 
             try
             {
-                var artist = await artistService.GetByIdAsync(id);
+                var artist = await _artistService.GetByIdAsync(id);
                 var artistName = artist?.Name ?? $"#{id}";
 
-                await artistService.DeleteAsync(id);
+                await _artistService.DeleteAsync(id);
                 TempData["Success"] = $"Artist '{artistName}' was deleted successfully.";
                 return RedirectToAction(nameof(DeleteArtist));
             }
@@ -276,7 +307,7 @@ namespace RecordDB.MVC.Controllers
                 return View(vm);
             }
 
-            var results = (await artistService.SearchAsync(term)).ToList();
+            var results = (await _artistService.SearchAsync(term)).ToList();
 
             // Single match — go straight to their records without an extra click
             if (results.Count == 1)
@@ -307,7 +338,7 @@ namespace RecordDB.MVC.Controllers
             const int pageSize = 20;
 
             // Calls api/artist/no-biography -> ArtistRepository.GetArtistsWithNoBiographyAsync() -> up_SelectArtistsWithNoBiography
-            var all = (await artistService.GetWithNoBiographyAsync()).ToList();
+            var all = (await _artistService.GetWithNoBiographyAsync()).ToList();
 
             if (!string.IsNullOrWhiteSpace(search))
             {

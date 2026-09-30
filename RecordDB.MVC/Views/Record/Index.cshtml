@@ -129,19 +129,18 @@ else
     <!-- ======================================================================
          Desktop & Laptop View: Clean modern table (Visible on Large screens)
          ====================================================================== -->
-    <div class="app-card d-none d-lg-block mb-4">
+    <div class="d-none d-lg-flex justify-content-center mb-4">
+        <div class="app-card" style="width: 85%; max-width: 1100px;">
         <div class="table-responsive">
             <table class="table table-custom align-middle">
                 <thead>
                     <tr>
                         <th>Artist</th>
-                        <th>Album Title</th>
-                        <th>Year</th>
+                        <th>Album</th>
                         <th>Field</th>
-                        <th>Media</th>
                         <th>Discs</th>
                         <th>Rating</th>
-                        <th class="text-end" style="width: 250px;">Actions</th>
+                        <th class="text-end" style="width: 220px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -162,30 +161,14 @@ else
                                 }
                             </td>
                             <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="fw-semibold text-dark">
-                                        @record.Name
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                @if (record.Recorded > 0)
-                                {
-                                    <span class="badge bg-light text-dark border">@record.Recorded</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">—</span>
-                                }
+                                <a asp-action="Details" asp-route-id="@record.RecordId"
+                                   class="text-decoration-none fw-semibold text-dark">
+                                    @record.Recorded - @record.Name (@(string.IsNullOrWhiteSpace(record.Media) ? "—" : record.Media))
+                                </a>
                             </td>
                             <td>
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border small">
                                     @(string.IsNullOrWhiteSpace(record.Field) ? "&mdash;" : record.Field)
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary border small">
-                                    @(string.IsNullOrWhiteSpace(record.Media) ? "&mdash;" : record.Media)
                                 </span>
                             </td>
                             <td>
@@ -209,10 +192,6 @@ else
                                 }
                             </td>
                             <td class="text-end text-nowrap">
-                                <a asp-action="Details" asp-route-id="@record.RecordId"
-                                   class="btn btn-sm btn-outline-primary" title="View album details">
-                                    <i class="bi bi-eye"></i> Details
-                                </a>
                                 <a asp-action="Edit" asp-route-id="@record.RecordId"
                                    class="btn btn-sm btn-outline-success" title="Edit album">
                                     <i class="bi bi-pencil"></i> Edit
@@ -226,6 +205,7 @@ else
                     }
                 </tbody>
             </table>
+        </div>
         </div>
     </div>
 
