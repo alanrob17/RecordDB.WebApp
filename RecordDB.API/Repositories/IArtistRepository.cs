@@ -42,5 +42,8 @@ namespace RecordDB.API.Repositories
 
         /// <summary>Returns the ArtistId for the artist associated with a given record.</summary>
         Task<int> GetArtistIdAsync(int recordId);
+
+        /// <summary>Returns a list of all artists and their ArtistIds.</summary>
+        Task<IEnumerable<Artist>> GetArtistListAsync();
     }
 }

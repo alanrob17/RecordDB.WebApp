@@ -146,5 +146,11 @@ namespace RecordDB.API.Repositories
             parameters.Add("@ArtistId", dbType: DbType.Int32, direction: ParameterDirection.Output);
             return await _db.SaveDataReturnId(sproc, parameters, "@ArtistId");
         }
+
+        public async Task<IEnumerable<Artist>> GetArtistListAsync()
+        {
+            string sproc = "up_getArtistListandNone";
+            return await _db.GetData<Artist, dynamic>(sproc, new { });
+        }
     }
 }

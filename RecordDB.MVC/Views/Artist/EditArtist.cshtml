@@ -1,0 +1,161 @@
+@model RecordDB.Shared.DTOs.UpdateArtistDto
+
+@{
+    var hasArtist = Model != null && Model.ArtistId > 0;
+    ViewData["Title"] = hasArtist ? $"Edit {Model?.Name}" : "Edit Artist";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <!-- Back Navigation -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Artists
+            </a>
+            @if (hasArtist && Model != null)
+            {
+                <span class="badge-id">Editing ID: #@Model.ArtistId</span>
+            }
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+                <div>@TempData["Success"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                <div>@TempData["Error"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="app-card">
+            <!-- Header -->
+            <div class="app-card-header colored-primary">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square fs-4 text-white"></i>
+                    <div>
+                        <h1 class="h4 mb-0 fw-bold text-white">Edit Artist</h1>
+                        <span class="text-white-50 small">
+                            @(hasArtist && Model != null ? $"#{Model.ArtistId} \u2014 {Model.Name}" : "Select an artist from the dropdown list to edit")
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="app-card-body">
+                <!-- DropDown List of Artists -->
+                <form id="artistSelectForm" method="get" asp-action="EditArtist" class="mb-4 p-3 bg-light rounded border">
+                    <label for="artistSelector" class="form-label fw-bold text-dark mb-1">
+                        <i class="bi bi-person-lines-fill me-1 text-primary"></i> Select Artist to Edit
+                    </label>
+                    <div class="input-group">
+                        <select id="artistSelector" name="id" class="form-select form-select-lg" asp-items="ViewBag.ArtistList">
+                        </select>
+                        <button type="submit" id="btnLoadArtist" class="btn btn-primary px-3">
+                            <i class="bi bi-arrow-repeat"></i> Load
+                        </button>
+                    </div>
+                    <div class="form-text text-muted small mt-1">
+                        Choose an artist from the dropdown list. Selecting an artist will automatically load their information below.
+                    </div>
+                </form>
+
+                @if (!hasArtist)
+                {
+                    <div class="alert alert-info d-flex align-items-center gap-2 mb-0" role="alert">
+                        <i class="bi bi-info-circle-fill fs-5 flex-shrink-0"></i>
+                        <div>Please select an artist from the dropdown list above to edit their details.</div>
+                    </div>
+                }
+                else
+                {
+                    <form asp-action="EditArtist" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                            <div>Please check the errors below.</div>
+                        </div>
+
+                        <input type="hidden" asp-for="ArtistId" />
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-sm-6">
+                                <label asp-for="FirstName" class="form-label">First Name</label>
+                                <input asp-for="FirstName" class="form-control" placeholder="First name" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <label asp-for="LastName" class="form-label">Last Name</label>
+                                <input asp-for="LastName" class="form-control" placeholder="Last name" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Display Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="Full artist or group name" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                            <div class="form-text text-muted small">
+                                This name will be displayed across album listings and record searches.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Biography" class="form-label">Biography</label>
+                            <textarea asp-for="Biography" class="form-control" rows="7" 
+                                      placeholder="Artist biography, origins, discography notes..."></textarea>
+                            <span asp-validation-for="Biography" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Responsive Action Footer -->
+                        <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 pt-2 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary order-3 order-sm-1">
+                                Cancel
+                            </a>
+
+                            <div class="d-flex gap-2 order-1 order-sm-2">
+                                @if (Model != null)
+                                {
+                                    <a asp-action="Details" asp-route-id="@Model.ArtistId" class="btn btn-outline-primary flex-fill">
+                                        <i class="bi bi-eye"></i> Details
+                                    </a>
+                                }
+                                <button type="submit" class="btn btn-success flex-fill">
+                                    <i class="bi bi-check2"></i> Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selector = document.getElementById('artistSelector');
+            if (selector) {
+                selector.addEventListener('change', function () {
+                    const selectedVal = this.value;
+                    if (selectedVal && parseInt(selectedVal, 10) > 0) {
+                        window.location.href = '@Url.Action("EditArtist", "Artist")?id=' + selectedVal;
+                    } else {
+                        window.location.href = '@Url.Action("EditArtist", "Artist")';
+                    }
+                });
+            }
+        });
+    </script>
+}

@@ -15,6 +15,9 @@ namespace RecordDB.MVC.Services
         public async Task<IEnumerable<ArtistDto>> GetAllAsync()
             => await http.GetFromJsonAsync<IEnumerable<ArtistDto>>("api/artist") ?? [];
 
+        public async Task<IEnumerable<ArtistDto>> GetArtistListAsync()
+            => await http.GetFromJsonAsync<IEnumerable<ArtistDto>>("api/artist/artist-list") ?? [];
+
         public async Task<ArtistDto?> GetByIdAsync(int id)
             => await http.GetFromJsonAsync<ArtistDto>($"api/artist/{id}");
 

@@ -8,6 +8,7 @@ namespace RecordDB.MVC.Services
     public interface IArtistService
     {
         Task<IEnumerable<ArtistDto>> GetAllAsync();
+        Task<IEnumerable<ArtistDto>> GetArtistListAsync();
         Task<ArtistDto?>             GetByIdAsync(int id);
         Task<IEnumerable<ArtistDto>> SearchAsync(string name);
         Task<IEnumerable<ArtistDto>> GetWithNoBiographyAsync();

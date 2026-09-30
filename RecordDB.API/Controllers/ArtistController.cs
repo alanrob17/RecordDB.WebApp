@@ -55,6 +55,17 @@ namespace RecordDB.API.Controllers
             return Ok(artists.Select(ToDto));
         }
 
+        /// <summary>Returns a list of all artists with their IDs and formatted names for dropdown menus.</summary>
+        /// <response code="200">List of artists for dropdown menu.</response>
+        [HttpGet("artist-list")]
+        [HttpGet("list")]
+        [ProducesResponseType(typeof(IEnumerable<ArtistDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ArtistDto>>> GetArtistList()
+        {
+            var artists = await _artistRepository.GetArtistListAsync();
+            return Ok(artists.Select(ToDto));
+        }
+
         /// <summary>Returns a single artist by ID.</summary>
         /// <param name="id">The artist's primary key.</param>
         /// <response code="200">The requested artist.</response>
