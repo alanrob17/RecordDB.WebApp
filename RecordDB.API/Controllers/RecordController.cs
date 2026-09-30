@@ -180,6 +180,18 @@ namespace RecordDB.API.Controllers
             return Ok(records);
         }
 
+        /// <summary>Returns records for an artist for dropdown lists including (None).</summary>
+        /// <param name="artistId">The artist's primary key.</param>
+        /// <response code="200">List of records for dropdown menu.</response>
+        [HttpGet("artist-record-list/{artistId:int}")]
+        [HttpGet("artist-records/{artistId:int}")]
+        [ProducesResponseType(typeof(IEnumerable<Record>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Record>>> GetArtistRecordsDropdownList(int artistId)
+        {
+            var records = await _recordRepository.SelectArtistRecordsAsync(artistId);
+            return Ok(records);
+        }
+
         /// <summary>Returns per-artist total disc count and cost.</summary>
         /// <response code="200">List of artist totals.</response>
         [HttpGet("totals")]

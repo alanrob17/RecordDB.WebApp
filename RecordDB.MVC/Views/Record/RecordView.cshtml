@@ -3,8 +3,8 @@
 @{
     ViewData["Title"] = $"{Model.Record.Name} — Showcase";
     var record = Model.Record;
-    var boughtFormatted = record.Bought != DateTime.MinValue && record.Bought != default
-        ? record.Bought.ToString("dd-MMM-yyyy")
+    var boughtFormatted = record.Bought.HasValue && record.Bought.Value != DateTime.MinValue && record.Bought.Value != default
+        ? record.Bought.Value.ToString("dd-MMM-yyyy")
         : "—";
     var costFormatted = record.Cost.HasValue ? record.Cost.Value.ToString("C") : "—";
 }
@@ -329,7 +329,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @if (record.Bought != DateTime.MinValue && record.Bought != default)
+                            @if (record.Bought.HasValue && record.Bought.Value != DateTime.MinValue && record.Bought.Value != default)
                             {
                                 <div class="text-muted small">
                                     Purchased on <span class="fw-semibold text-dark">@boughtFormatted</span>

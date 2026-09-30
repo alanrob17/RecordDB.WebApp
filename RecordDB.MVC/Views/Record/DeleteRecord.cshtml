@@ -1,0 +1,222 @@
+@model RecordDB.Shared.DTOs.ArtistRecordDto
+
+@{
+    var hasRecord = Model != null && Model.RecordId > 0;
+    ViewData["Title"] = hasRecord ? $"Delete {Model?.Name}" : "Delete Record";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <!-- Back Navigation -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Records
+            </a>
+            @if (hasRecord && Model != null)
+            {
+                <span class="badge-id">Record ID: #@Model.RecordId</span>
+            }
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+                <div>@TempData["Success"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                <div>@TempData["Error"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="app-card border-danger">
+            <!-- Danger Header -->
+            <div class="app-card-header colored-danger">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-octagon-fill fs-4 text-white"></i>
+                    <div>
+                        <h1 class="h4 mb-0 fw-bold text-white">Confirm Record Deletion</h1>
+                        <span class="text-white-50 small">
+                            @(hasRecord && Model != null ? $"Warning: Deleting #{Model.RecordId} \u2014 {Model.Name}" : "Select an artist and record from the dropdown lists to delete")
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="app-card-body">
+                <!-- DropDown Selectors for Artist and Record -->
+                <form id="recordSelectForm" method="get" asp-action="DeleteRecord" class="mb-4 p-3 bg-light rounded border">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label for="artistSelector" class="form-label fw-bold text-dark mb-1">
+                                <i class="bi bi-person-lines-fill me-1 text-danger"></i> 1. Select Artist
+                            </label>
+                            <select id="artistSelector" name="artistId" class="form-select form-select-lg" asp-items="ViewBag.ArtistList">
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="recordSelector" class="form-label fw-bold text-dark mb-1">
+                                <i class="bi bi-disc me-1 text-danger"></i> 2. Select Artist Record
+                            </label>
+                            <div class="input-group">
+                                <select id="recordSelector" name="recordId" class="form-select form-select-lg" asp-items="ViewBag.RecordList">
+                                </select>
+                                <button type="submit" id="btnLoadRecord" class="btn btn-outline-danger px-3">
+                                    <i class="bi bi-arrow-repeat"></i> Load
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-text text-muted small mt-2">
+                        Choose an artist to filter albums, then select a record from the second dropdown list to review and confirm deletion.
+                    </div>
+                </form>
+
+                @if (!hasRecord || Model == null)
+                {
+                    <div class="alert alert-info d-flex align-items-center gap-2 mb-0" role="alert">
+                        <i class="bi bi-info-circle-fill fs-5 flex-shrink-0"></i>
+                        <div>Please select an artist and then a record from the dropdown lists above to view its details and confirm deletion.</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger d-flex align-items-start gap-2 mb-4">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <strong>Are you sure you want to delete this album?</strong>
+                            <div class="small mt-1">
+                                This will permanently remove <strong>@Model.Name</strong> @(!string.IsNullOrWhiteSpace(Model.ArtistName) ? $"by {Model.ArtistName}" : "") from your RecordDB catalogue.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Record Profile Preview -->
+                    <div class="p-3 bg-light rounded-3 border mb-3">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="brand-icon" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                <i class="bi bi-vinyl"></i>
+                            </div>
+                            <div>
+                                <h2 class="h5 mb-0 fw-bold text-dark">@Model.Name</h2>
+                                <div class="text-muted small">
+                                    by <strong>@Model.ArtistName</strong> 
+                                    @(Model.Recorded > 0 ? $"({Model.Recorded})" : "")
+                                </div>
+                            </div>
+                        </div>
+
+                        <dl class="row mb-0 small">
+                            <dt class="col-4 text-muted">Record ID:</dt>
+                            <dd class="col-8 text-dark mb-1">#@Model.RecordId</dd>
+
+                            <dt class="col-4 text-muted">Format / Media:</dt>
+                            <dd class="col-8 text-dark mb-1">
+                                @(string.IsNullOrWhiteSpace(Model.Media) ? "CD" : Model.Media)
+                                @(Model.Discs > 1 ? $"({Model.Discs} Discs)" : "")
+                            </dd>
+
+                            <dt class="col-4 text-muted">Label:</dt>
+                            <dd class="col-8 text-dark mb-1">@(string.IsNullOrWhiteSpace(Model.Label) ? "—" : Model.Label)</dd>
+
+                            <dt class="col-4 text-muted">Pressing:</dt>
+                            <dd class="col-8 text-dark mb-1">@(string.IsNullOrWhiteSpace(Model.Pressing) ? "—" : Model.Pressing)</dd>
+
+                            <dt class="col-4 text-muted">Rating:</dt>
+                            <dd class="col-8 text-dark mb-1">@(string.IsNullOrWhiteSpace(Model.Rating) ? "—" : Model.Rating)</dd>
+
+                            <dt class="col-4 text-muted">Date Bought:</dt>
+                            <dd class="col-8 text-dark mb-1">
+                                @(Model.Bought.HasValue && Model.Bought.Value != DateTime.MinValue && Model.Bought.Value != default 
+                                    ? Model.Bought.Value.ToString("d MMMM yyyy") 
+                                    : "—")
+                            </dd>
+
+                            @if (Model.Cost.HasValue)
+                            {
+                                <dt class="col-4 text-muted">Cost:</dt>
+                                <dd class="col-8 text-dark mb-1">@Model.Cost.Value.ToString("C")</dd>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.Review))
+                            {
+                                <dt class="col-4 text-muted">Review Preview:</dt>
+                                <dd class="col-8 text-muted fst-italic mb-0">
+                                    @(Model.Review.Length > 80 ? Model.Review[..80] + "…" : Model.Review)
+                                </dd>
+                            }
+                        </dl>
+                    </div>
+
+                    <!-- Confirmation Form & Actions -->
+                    <form asp-action="DeleteRecord" method="post">
+                        <input type="hidden" name="id" value="@Model.RecordId" />
+                        <input type="hidden" name="artistId" value="@Model.ArtistId" />
+
+                        <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary order-3 order-sm-1">
+                                Cancel
+                            </a>
+
+                            <div class="d-flex gap-2 order-1 order-sm-2">
+                                <a asp-action="Details" asp-route-id="@Model.RecordId" class="btn btn-outline-primary flex-fill">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+                                <button type="submit" class="btn btn-danger flex-fill">
+                                    <i class="bi bi-trash-fill"></i> Permanently Delete
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const artistSelector = document.getElementById('artistSelector');
+            const recordSelector = document.getElementById('recordSelector');
+
+            if (artistSelector) {
+                artistSelector.addEventListener('change', function () {
+                    const artistId = this.value;
+                    if (artistId && parseInt(artistId, 10) > 0) {
+                        window.location.href = '@Url.Action("DeleteRecord", "Record")?artistId=' + encodeURIComponent(artistId);
+                    } else {
+                        window.location.href = '@Url.Action("DeleteRecord", "Record")';
+                    }
+                });
+            }
+
+            if (recordSelector) {
+                recordSelector.addEventListener('change', function () {
+                    const recordId = this.value;
+                    const artistId = artistSelector ? artistSelector.value : '';
+
+                    if (recordId && parseInt(recordId, 10) > 0) {
+                        let targetUrl = '@Url.Action("DeleteRecord", "Record")?recordId=' + encodeURIComponent(recordId);
+                        if (artistId && parseInt(artistId, 10) > 0) {
+                            targetUrl += '&artistId=' + encodeURIComponent(artistId);
+                        }
+                        window.location.href = targetUrl;
+                    } else if (artistId && parseInt(artistId, 10) > 0) {
+                        window.location.href = '@Url.Action("DeleteRecord", "Record")?artistId=' + encodeURIComponent(artistId);
+                    } else {
+                        window.location.href = '@Url.Action("DeleteRecord", "Record")';
+                    }
+                });
+            }
+        });
+    </script>
+}

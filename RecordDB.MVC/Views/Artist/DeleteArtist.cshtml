@@ -1,0 +1,160 @@
+@model RecordDB.Shared.DTOs.ArtistDto
+
+@{
+    var hasArtist = Model != null && Model.ArtistId > 0;
+    ViewData["Title"] = hasArtist ? $"Delete {Model?.Name}" : "Delete Artist";
+    var initial = hasArtist && !string.IsNullOrEmpty(Model?.Name)
+        ? Model.Name.Trim()[..1].ToUpper()
+        : (hasArtist && !string.IsNullOrEmpty(Model?.LastName) ? Model.LastName.Trim()[..1].ToUpper() : "?");
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <!-- Back Navigation -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Artists
+            </a>
+            @if (hasArtist && Model != null)
+            {
+                <span class="badge-id">Artist ID: #@Model.ArtistId</span>
+            }
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+                <div>@TempData["Success"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                <div>@TempData["Error"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="app-card border-danger">
+            <!-- Danger Header -->
+            <div class="app-card-header colored-danger">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-octagon-fill fs-4 text-white"></i>
+                    <div>
+                        <h1 class="h4 mb-0 fw-bold text-white">Confirm Deletion</h1>
+                        <span class="text-white-50 small">
+                            @(hasArtist && Model != null ? $"Warning: Deleting #{Model.ArtistId} \u2014 {Model.Name}" : "Select an artist from the dropdown list to delete")
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="app-card-body">
+                <!-- DropDown List of Artists -->
+                <form id="artistSelectForm" method="get" asp-action="DeleteArtist" class="mb-4 p-3 bg-light rounded border">
+                    <label for="artistSelector" class="form-label fw-bold text-dark mb-1">
+                        <i class="bi bi-person-lines-fill me-1 text-danger"></i> Select Artist to Delete
+                    </label>
+                    <div class="input-group">
+                        <select id="artistSelector" name="id" class="form-select form-select-lg" asp-items="ViewBag.ArtistList">
+                        </select>
+                        <button type="submit" id="btnLoadArtist" class="btn btn-outline-danger px-3">
+                            <i class="bi bi-arrow-repeat"></i> Load
+                        </button>
+                    </div>
+                    <div class="form-text text-muted small mt-1">
+                        Choose an artist from the dropdown list to review their information and confirm deletion.
+                    </div>
+                </form>
+
+                @if (!hasArtist || Model == null)
+                {
+                    <div class="alert alert-info d-flex align-items-center gap-2 mb-0" role="alert">
+                        <i class="bi bi-info-circle-fill fs-5 flex-shrink-0"></i>
+                        <div>Please select an artist from the dropdown list above to view their details and confirm deletion.</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger d-flex align-items-start gap-2 mb-4">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <strong>Are you sure you want to delete this artist?</strong>
+                            <div class="small mt-1">This will permanently remove <strong>@Model.Name</strong> from the RecordDB database catalogue.</div>
+                        </div>
+                    </div>
+
+                    <!-- Artist Profile Card Preview -->
+                    <div class="p-3 bg-light rounded-3 border mb-3">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="artist-avatar">@initial</div>
+                            <div>
+                                <h2 class="h5 mb-0 fw-bold text-dark">@Model.Name</h2>
+                                <span class="badge-id">Artist ID: #@Model.ArtistId</span>
+                            </div>
+                        </div>
+
+                        <dl class="row mb-0 small">
+                            <dt class="col-4 text-muted">First Name:</dt>
+                            <dd class="col-8 text-dark mb-1">@(string.IsNullOrWhiteSpace(Model.FirstName) ? "—" : Model.FirstName)</dd>
+
+                            <dt class="col-4 text-muted">Last Name:</dt>
+                            <dd class="col-8 text-dark mb-1">@(string.IsNullOrWhiteSpace(Model.LastName) ? "—" : Model.LastName)</dd>
+
+                            @if (!string.IsNullOrEmpty(Model.Biography))
+                            {
+                                <dt class="col-4 text-muted">Biography:</dt>
+                                <dd class="col-8 text-muted fst-italic mb-0">
+                                    @(Model.Biography.Length > 80 ? Model.Biography[..80] + "…" : Model.Biography)
+                                </dd>
+                            }
+                        </dl>
+                    </div>
+
+                    <!-- Form & Actions -->
+                    <form asp-action="DeleteArtist" method="post">
+                        <input type="hidden" name="id" value="@Model.ArtistId" />
+
+                        <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary order-3 order-sm-1">
+                                Cancel
+                            </a>
+
+                            <div class="d-flex gap-2 order-1 order-sm-2">
+                                <a asp-action="Details" asp-route-id="@Model.ArtistId" class="btn btn-outline-primary flex-fill">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+                                <button type="submit" class="btn btn-danger flex-fill">
+                                    <i class="bi bi-trash-fill"></i> Permanently Delete
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selector = document.getElementById('artistSelector');
+            if (selector) {
+                selector.addEventListener('change', function () {
+                    const selectedVal = this.value;
+                    if (selectedVal && parseInt(selectedVal, 10) > 0) {
+                        window.location.href = '@Url.Action("DeleteArtist", "Artist")?id=' + selectedVal;
+                    } else {
+                        window.location.href = '@Url.Action("DeleteArtist", "Artist")';
+                    }
+                });
+            }
+        });
+    </script>
+}

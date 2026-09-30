@@ -105,7 +105,7 @@ namespace RecordDB.MVC.Controllers
         // EditArtist — update artist with dropdown selector
         // -----------------------------------------------------------------------
 
-        private async Task PopulateArtistListDropdownAsync(int? selectedArtistId = null)
+        private async Task PopulateArtistListDropdownAsync(int? selectedArtistId = null, string placeholder = "-- Select an Artist to Edit --")
         {
             var artists = (await artistService.GetArtistListAsync()).ToList();
 
@@ -113,7 +113,7 @@ namespace RecordDB.MVC.Controllers
             {
                 var isPlaceholder = a.ArtistId == 0;
                 var text = isPlaceholder
-                    ? "-- Select an Artist to Edit --"
+                    ? placeholder
                     : (a.Name ?? $"{a.LastName}, {a.FirstName}".Trim());
 
                 return new SelectListItem
@@ -203,6 +203,55 @@ namespace RecordDB.MVC.Controllers
             await artistService.DeleteAsync(id);
             TempData["Success"] = "Artist deleted.";
             return RedirectToAction(nameof(Index));
+        }
+
+        // -----------------------------------------------------------------------
+        // DeleteArtist — delete artist with dropdown selection
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteArtist(int? id = null)
+        {
+            await PopulateArtistListDropdownAsync(id, "-- Select an Artist to Delete --");
+
+            if (!id.HasValue || id.Value <= 0)
+            {
+                return View(new ArtistDto());
+            }
+
+            var artist = await artistService.GetByIdAsync(id.Value);
+            if (artist is null)
+            {
+                TempData["Error"] = $"Artist with ID #{id.Value} not found.";
+                return RedirectToAction(nameof(DeleteArtist));
+            }
+
+            return View(artist);
+        }
+
+        [HttpPost, ActionName("DeleteArtist"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteArtistConfirmed(int id)
+        {
+            if (id <= 0)
+            {
+                TempData["Error"] = "Please select an artist to delete.";
+                return RedirectToAction(nameof(DeleteArtist));
+            }
+
+            try
+            {
+                var artist = await artistService.GetByIdAsync(id);
+                var artistName = artist?.Name ?? $"#{id}";
+
+                await artistService.DeleteAsync(id);
+                TempData["Success"] = $"Artist '{artistName}' was deleted successfully.";
+                return RedirectToAction(nameof(DeleteArtist));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Failed to delete artist: {ex.Message}";
+                return RedirectToAction(nameof(DeleteArtist), new { id });
+            }
         }
 
         // -----------------------------------------------------------------------

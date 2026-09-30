@@ -121,8 +121,8 @@
 
                             <dt class="col-sm-3 text-muted">Date Bought</dt>
                             <dd class="col-sm-9 text-dark">
-                                @(Model.Bought != DateTime.MinValue && Model.Bought != default 
-                                    ? Model.Bought.ToString("d MMMM yyyy") 
+                                @(Model.Bought.HasValue && Model.Bought.Value != DateTime.MinValue && Model.Bought.Value != default 
+                                    ? Model.Bought.Value.ToString("d MMMM yyyy") 
                                     : "—")
                             </dd>
 

@@ -32,6 +32,85 @@ namespace RecordDB.MVC.Controllers
             ViewBag.Artists = selectList;
         }
 
+        private async Task PopulateArtistListDropdownAsync(int? selectedArtistId = null, string placeholder = "-- Select an Artist --")
+        {
+            var artists = (await artistService.GetArtistListAsync()).ToList();
+
+            var selectList = artists.Select(a =>
+            {
+                var isPlaceholder = a.ArtistId == 0;
+                var text = isPlaceholder
+                    ? placeholder
+                    : (a.Name ?? $"{a.LastName}, {a.FirstName}".Trim());
+
+                return new SelectListItem
+                {
+                    Value    = a.ArtistId.ToString(),
+                    Text     = text,
+                    Selected = selectedArtistId.HasValue && a.ArtistId == selectedArtistId.Value
+                };
+            }).ToList();
+
+            if (!selectList.Any(i => i.Value == "0"))
+            {
+                selectList.Insert(0, new SelectListItem
+                {
+                    Value    = "0",
+                    Text     = placeholder,
+                    Selected = !selectedArtistId.HasValue || selectedArtistId.Value == 0
+                });
+            }
+
+            ViewBag.ArtistList = selectList;
+            ViewBag.SelectedArtistId = selectedArtistId;
+        }
+
+        private async Task PopulateArtistRecordsDropdownAsync(int? artistId, int? selectedRecordId = null, string placeholder = "-- Select a Record to Edit --")
+        {
+            var selectList = new List<SelectListItem>();
+
+            if (artistId.HasValue && artistId.Value > 0)
+            {
+                var records = (await recordService.SelectArtistRecordsAsync(artistId.Value)).ToList();
+
+                var hasZero = records.Any(r => r.RecordId == 0);
+                if (!hasZero)
+                {
+                    selectList.Add(new SelectListItem
+                    {
+                        Value    = "0",
+                        Text     = placeholder,
+                        Selected = !selectedRecordId.HasValue || selectedRecordId.Value == 0
+                    });
+                }
+
+                foreach (var r in records)
+                {
+                    var isPlaceholder = r.RecordId == 0;
+                    var text = isPlaceholder ? placeholder : (r.Name ?? $"Record #{r.RecordId}");
+
+                    selectList.Add(new SelectListItem
+                    {
+                        Value    = r.RecordId.ToString(),
+                        Text     = text,
+                        Selected = selectedRecordId.HasValue && r.RecordId == selectedRecordId.Value
+                    });
+                }
+            }
+            else
+            {
+                selectList.Add(new SelectListItem
+                {
+                    Value    = "0",
+                    Text     = "-- Select an Artist First --",
+                    Selected = true
+                });
+            }
+
+            ViewBag.RecordList = selectList;
+            ViewBag.SelectedRecordId = selectedRecordId;
+        }
+
         // -----------------------------------------------------------------------
         // Index — list all records with pagination and search
         // -----------------------------------------------------------------------
@@ -323,6 +402,114 @@ namespace RecordDB.MVC.Controllers
         }
 
         // -----------------------------------------------------------------------
+        // EditRecord — update record with dual dropdown selectors (Artist & Record)
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> GetArtistRecordsJson(int artistId)
+        {
+            if (artistId <= 0) return Json(Array.Empty<object>());
+            var records = await recordService.SelectArtistRecordsAsync(artistId);
+            return Json(records.Select(r => new { recordId = r.RecordId, name = r.Name }));
+        }
+
+        [HttpGet]
+        [Route("Record/EditRecord")]
+        [Route("Records/EditRecord")]
+        [Route("EditRecord")]
+        public async Task<IActionResult> EditRecord(int? artistId = null, int? recordId = null, int? id = null)
+        {
+            recordId ??= id;
+
+            // If a recordId is given without an artistId, resolve the artistId from the record
+            if (recordId.HasValue && recordId.Value > 0 && (!artistId.HasValue || artistId.Value <= 0))
+            {
+                var existingRecord = await recordService.GetByIdAsync(recordId.Value);
+                if (existingRecord != null)
+                {
+                    artistId = existingRecord.ArtistId;
+                }
+            }
+
+            await PopulateArtistListDropdownAsync(artistId);
+            await PopulateArtistRecordsDropdownAsync(artistId, recordId);
+
+            if (!recordId.HasValue || recordId.Value <= 0)
+            {
+                await PopulateArtistsDropdownAsync(artistId);
+                return View(new UpdateRecordDto { ArtistId = artistId ?? 0 });
+            }
+
+            var record = await recordService.GetByIdAsync(recordId.Value);
+            if (record is null)
+            {
+                TempData["Error"] = $"Record with ID #{recordId.Value} not found.";
+                return RedirectToAction(nameof(EditRecord), new { artistId });
+            }
+
+            await PopulateArtistsDropdownAsync(record.ArtistId);
+
+            var dto = new UpdateRecordDto
+            {
+                RecordId  = record.RecordId,
+                ArtistId  = record.ArtistId,
+                Name      = record.Name ?? string.Empty,
+                Field     = record.Field,
+                Recorded  = record.Recorded,
+                Label     = record.Label,
+                Pressing  = record.Pressing,
+                Rating    = record.Rating,
+                Discs     = record.Discs,
+                Media     = record.Media,
+                Bought    = record.Bought == DateTime.MinValue ? null : record.Bought,
+                Cost      = record.Cost,
+                CoverName = record.CoverName,
+                Review    = record.Review
+            };
+
+            return View(dto);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [Route("Record/EditRecord")]
+        [Route("Records/EditRecord")]
+        [Route("EditRecord")]
+        public async Task<IActionResult> EditRecord(UpdateRecordDto dto)
+        {
+            if (dto.RecordId <= 0)
+            {
+                ModelState.AddModelError(string.Empty, "Please select a record from the dropdown to edit.");
+                await PopulateArtistListDropdownAsync(dto.ArtistId);
+                await PopulateArtistRecordsDropdownAsync(dto.ArtistId, null);
+                await PopulateArtistsDropdownAsync(dto.ArtistId);
+                return View(dto);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await PopulateArtistListDropdownAsync(dto.ArtistId);
+                await PopulateArtistRecordsDropdownAsync(dto.ArtistId, dto.RecordId);
+                await PopulateArtistsDropdownAsync(dto.ArtistId);
+                return View(dto);
+            }
+
+            try
+            {
+                await recordService.UpdateAsync(dto.RecordId, dto);
+                TempData["Success"] = $"Record \"{dto.Name}\" was updated successfully.";
+                return RedirectToAction(nameof(EditRecord), new { artistId = dto.ArtistId, recordId = dto.RecordId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Failed to update record: {ex.Message}");
+                await PopulateArtistListDropdownAsync(dto.ArtistId);
+                await PopulateArtistRecordsDropdownAsync(dto.ArtistId, dto.RecordId);
+                await PopulateArtistsDropdownAsync(dto.ArtistId);
+                return View(dto);
+            }
+        }
+
+        // -----------------------------------------------------------------------
         // Delete — confirmation & execution
         // -----------------------------------------------------------------------
 
@@ -339,6 +526,75 @@ namespace RecordDB.MVC.Controllers
             await recordService.DeleteAsync(id);
             TempData["Success"] = "Record deleted successfully.";
             return RedirectToAction(nameof(Index));
+        }
+
+        // -----------------------------------------------------------------------
+        // DeleteRecord — delete record with dual dropdown selectors (Artist & Record)
+        // -----------------------------------------------------------------------
+
+        [HttpGet]
+        [Route("Record/DeleteRecord")]
+        [Route("Records/DeleteRecord")]
+        [Route("DeleteRecord")]
+        public async Task<IActionResult> DeleteRecord(int? artistId = null, int? recordId = null, int? id = null)
+        {
+            recordId ??= id;
+
+            // If a recordId is given without an artistId, resolve the artistId from the record
+            if (recordId.HasValue && recordId.Value > 0 && (!artistId.HasValue || artistId.Value <= 0))
+            {
+                var existingRecord = await recordService.GetByIdAsync(recordId.Value);
+                if (existingRecord != null)
+                {
+                    artistId = existingRecord.ArtistId;
+                }
+            }
+
+            await PopulateArtistListDropdownAsync(artistId);
+            await PopulateArtistRecordsDropdownAsync(artistId, recordId, "-- Select a Record to Delete --");
+
+            if (!recordId.HasValue || recordId.Value <= 0)
+            {
+                return View(new ArtistRecordDto { ArtistId = artistId ?? 0 });
+            }
+
+            var record = await recordService.GetByIdAsync(recordId.Value);
+            if (record is null)
+            {
+                TempData["Error"] = $"Record with ID #{recordId.Value} not found.";
+                return RedirectToAction(nameof(DeleteRecord), new { artistId });
+            }
+
+            return View(record);
+        }
+
+        [HttpPost, ActionName("DeleteRecord"), ValidateAntiForgeryToken]
+        [Route("Record/DeleteRecord")]
+        [Route("Records/DeleteRecord")]
+        [Route("DeleteRecord")]
+        public async Task<IActionResult> DeleteRecordConfirmed(int id, int? artistId = null)
+        {
+            if (id <= 0)
+            {
+                TempData["Error"] = "Please select a record to delete.";
+                return RedirectToAction(nameof(DeleteRecord), new { artistId });
+            }
+
+            try
+            {
+                var record = await recordService.GetByIdAsync(id);
+                var recordName = record?.Name ?? $"#{id}";
+                var currentArtistId = artistId ?? record?.ArtistId;
+
+                await recordService.DeleteAsync(id);
+                TempData["Success"] = $"Record \"{recordName}\" was deleted successfully.";
+                return RedirectToAction(nameof(DeleteRecord), new { artistId = currentArtistId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Failed to delete record: {ex.Message}";
+                return RedirectToAction(nameof(DeleteRecord), new { artistId, recordId = id });
+            }
         }
 
         // -----------------------------------------------------------------------

@@ -30,6 +30,9 @@ namespace RecordDB.MVC.Services
         public async Task<IEnumerable<ArtistRecordDto>> GetRecordReviewsAsync()
             => await http.GetFromJsonAsync<IEnumerable<ArtistRecordDto>>("api/record/record-reviews") ?? [];
 
+        public async Task<IEnumerable<ArtistRecordDto>> SelectArtistRecordsAsync(int artistId)
+            => await http.GetFromJsonAsync<IEnumerable<ArtistRecordDto>>($"api/record/artist-record-list/{artistId}") ?? [];
+
         // -----------------------------------------------------------------------
         // POST
         // -----------------------------------------------------------------------
