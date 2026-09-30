@@ -56,38 +56,41 @@
                         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
                             @if (!string.IsNullOrWhiteSpace(record.Field))
                             {
-                                <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-3 py-1">
-                                    <i class="bi bi-music-note-beamed me-1"></i>@record.Field
+                                <span class="showcase-hero-badge">
+                                    <i class="bi bi-music-note-beamed me-1" style="color: #93c5fd;"></i>@record.Field
                                 </span>
                             }
                             @if (record.Recorded > 0)
                             {
-                                <span class="badge bg-white bg-opacity-10 text-white border border-light border-opacity-25 rounded-pill px-3 py-1">
-                                    <i class="bi bi-calendar3 me-1"></i>@record.Recorded
+                                <span class="showcase-hero-badge">
+                                    <i class="bi bi-calendar3 me-1" style="color: #93c5fd;"></i>@record.Recorded
                                 </span>
                             }
                             @if (!string.IsNullOrWhiteSpace(record.Rating))
                             {
-                                <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1">
-                                    ★ @record.Rating
+                                var ratingDisplay = record.Rating.Contains('*')
+                                    ? record.Rating.Replace("*", "★")
+                                    : (record.Rating.Contains('★') ? record.Rating : $"★ {record.Rating}");
+                                <span class="showcase-hero-badge rating-badge">
+                                    <i class="bi bi-star-fill me-1" style="color: #fde047;"></i>@ratingDisplay
                                 </span>
                             }
                         </div>
 
                         <h1 class="display-6 fw-bold text-white mb-2 text-break">@record.Name</h1>
 
-                        <div class="fs-5 text-light opacity-90 mb-3">
-                            <span>by </span>
+                        <div class="fs-5 text-white-50 mb-3 d-flex align-items-center justify-content-center justify-content-md-start gap-1 flex-wrap">
+                            <span>by</span>
                             @if (record.ArtistId > 0)
                             {
                                 <a asp-controller="Artist" asp-action="Details" asp-route-id="@record.ArtistId"
-                                   class="text-info fw-semibold text-decoration-none">
+                                   class="hero-artist-link fw-semibold text-decoration-none ms-1">
                                     <i class="bi bi-person-fill me-1"></i>@record.ArtistName
                                 </a>
                             }
                             else
                             {
-                                <span class="fw-semibold">@(string.IsNullOrWhiteSpace(record.ArtistName) ? "Unknown Artist" : record.ArtistName)</span>
+                                <span class="text-white fw-semibold ms-1">@(string.IsNullOrWhiteSpace(record.ArtistName) ? "Unknown Artist" : record.ArtistName)</span>
                             }
                         </div>
 
@@ -97,24 +100,24 @@
                                     id="heroBtnBio"
                                     class="btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn"
                                     onclick="showSection('artistBio')">
-                                <i class="bi bi-person-lines-fill me-1 text-info"></i> Artist Biography
+                                <i class="bi bi-person-lines-fill me-1"></i> Artist Biography
                             </button>
 
                             <button type="button"
                                     id="heroBtnReview"
                                     class="btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn"
                                     onclick="showSection('recordReview')">
-                                <i class="bi bi-chat-left-quote-fill me-1 text-warning"></i> Record Review
+                                <i class="bi bi-chat-left-quote-fill me-1"></i> Record Review
                             </button>
 
                             <button type="button"
                                     id="heroBtnTracks"
                                     class="btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn"
                                     onclick="showSection('trackListing')">
-                                <i class="bi bi-music-note-list me-1 text-primary"></i> Track Listing
+                                <i class="bi bi-music-note-list me-1"></i> Track Listing
                                 @if (Model.HasTracks)
                                 {
-                                    <span class="badge bg-primary bg-opacity-75 ms-1">@Model.TrackCount</span>
+                                    <span class="badge rounded-pill ms-1 hero-track-badge">@Model.TrackCount</span>
                                 }
                             </button>
 
@@ -145,26 +148,26 @@
                 <div class="d-flex flex-wrap gap-2">
                     <button type="button"
                             id="infoBtnBio"
-                            class="btn btn-outline-primary btn-sm showcase-tab-btn"
+                            class="btn btn-outline-primary btn-sm rounded-pill showcase-tab-btn"
                             onclick="showSection('artistBio')">
                         <i class="bi bi-person-lines-fill me-1"></i> Artist Biography
                     </button>
 
                     <button type="button"
                             id="infoBtnReview"
-                            class="btn btn-outline-warning btn-sm text-dark showcase-tab-btn"
+                            class="btn btn-outline-primary btn-sm rounded-pill showcase-tab-btn"
                             onclick="showSection('recordReview')">
-                        <i class="bi bi-chat-left-quote-fill me-1 text-warning"></i> Record Review
+                        <i class="bi bi-chat-left-quote-fill me-1"></i> Record Review
                     </button>
 
                     <button type="button"
                             id="infoBtnTracks"
-                            class="btn btn-outline-info btn-sm text-dark showcase-tab-btn"
+                            class="btn btn-outline-primary btn-sm rounded-pill showcase-tab-btn"
                             onclick="showSection('trackListing')">
-                        <i class="bi bi-music-note-list me-1 text-info"></i> Track Listing
+                        <i class="bi bi-music-note-list me-1"></i> Track Listing
                         @if (Model.HasTracks)
                         {
-                            <span class="badge bg-info text-white rounded-pill ms-1">@Model.TrackCount</span>
+                            <span class="badge rounded-pill ms-1 info-track-badge">@Model.TrackCount</span>
                         }
                     </button>
                 </div>
@@ -196,7 +199,7 @@
                     <div class="col-12 col-md-6">
                         <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="brand-icon bg-info bg-opacity-10 text-info" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                <div class="brand-icon bg-primary bg-opacity-10 text-primary" style="width: 42px; height: 42px; font-size: 1.1rem;">
                                     <i class="bi bi-calendar-event"></i>
                                 </div>
                                 <div>
@@ -246,7 +249,7 @@
                     <div class="col-12 col-md-6">
                         <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="brand-icon bg-warning bg-opacity-15 text-warning" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                <div class="brand-icon" style="width: 42px; height: 42px; font-size: 1.1rem; background: rgba(234, 179, 8, 0.15); color: #ca8a04;">
                                     <i class="bi bi-star-fill"></i>
                                 </div>
                                 <div>
@@ -254,7 +257,7 @@
                                     <div class="fs-5 fw-bold text-dark">
                                         @if (!string.IsNullOrWhiteSpace(record.Rating))
                                         {
-                                            <span class="text-warning">★ @record.Rating</span>
+                                            <span style="color: #ca8a04;">★ @record.Rating</span>
                                         }
                                         else
                                         {
@@ -286,7 +289,7 @@
                     <div class="col-12 col-md-6">
                         <div class="p-3 rounded-3 border bg-light h-100 d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="brand-icon bg-info bg-opacity-10 text-info" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                <div class="brand-icon bg-primary bg-opacity-10 text-primary" style="width: 42px; height: 42px; font-size: 1.1rem;">
                                     <i class="bi bi-disc"></i>
                                 </div>
                                 <div>
@@ -392,10 +395,10 @@
 
                     <!-- SECTION 2: RECORD REVIEW -->
                     <div id="sectionRecordReview" class="details-section" style="display: none;">
-                        <div class="card border-warning border-opacity-50 shadow-sm rounded-3">
-                            <div class="card-header bg-warning bg-opacity-10 border-bottom border-warning border-opacity-50 d-flex align-items-center justify-content-between py-3">
+                        <div class="card border border-primary border-opacity-25 shadow-sm rounded-3 overflow-hidden">
+                            <div class="card-header bg-primary bg-opacity-10 border-bottom border-primary border-opacity-25 d-flex align-items-center justify-content-between py-3">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-chat-left-quote-fill text-warning fs-5"></i>
+                                    <i class="bi bi-chat-left-quote-fill text-primary fs-5"></i>
                                     <h3 class="h6 mb-0 fw-bold text-dark">
                                         @record.Name — Album Review
                                     </h3>
@@ -410,8 +413,12 @@
                                     </div>
                                     @if (!string.IsNullOrWhiteSpace(record.Rating))
                                     {
-                                        <span class="badge bg-warning text-dark fs-6 px-3 py-2 rounded-pill">
-                                            ★ @record.Rating
+                                        var ratingDisplay = record.Rating.Contains('*')
+                                            ? record.Rating.Replace("*", "★")
+                                            : (record.Rating.Contains('★') ? record.Rating : $"★ {record.Rating}");
+                                        <span class="badge border rounded-pill fs-6 px-3 py-2"
+                                              style="background: #fefce8; color: #854d0e; border-color: #fef08a !important; letter-spacing: 1px;">
+                                            @ratingDisplay
                                         </span>
                                     }
                                 </div>
@@ -434,10 +441,10 @@
 
                     <!-- SECTION 3: TRACK LISTING -->
                     <div id="sectionTrackListing" class="details-section" style="display: none;">
-                        <div class="card border-info border-opacity-50 shadow-sm rounded-3">
-                            <div class="card-header bg-info bg-opacity-10 border-bottom border-info border-opacity-50 d-flex align-items-center justify-content-between flex-wrap gap-2 py-3">
+                        <div class="card border border-primary border-opacity-25 shadow-sm rounded-3 overflow-hidden">
+                            <div class="card-header bg-primary bg-opacity-10 border-bottom border-primary border-opacity-25 d-flex align-items-center justify-content-between flex-wrap gap-2 py-3">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-music-note-list text-info fs-5"></i>
+                                    <i class="bi bi-music-note-list text-primary fs-5"></i>
                                     <div>
                                         <h3 class="h6 mb-0 fw-bold text-dark">Track Listing</h3>
                                         <span class="text-muted small">Loaded via <code>up_GetArtistRecordTracks</code></span>
@@ -514,7 +521,7 @@
                                                             <td class="text-end">
                                                                 @if (!string.IsNullOrWhiteSpace(track.Extended))
                                                                 {
-                                                                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 small">
+                                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border small">
                                                                         @track.Extended
                                                                     </span>
                                                                 }
@@ -544,7 +551,7 @@
                                                             <div class="fw-semibold text-dark">@track.TrackName</div>
                                                             @if (!string.IsNullOrWhiteSpace(track.Extended))
                                                             {
-                                                                <span class="badge bg-info bg-opacity-10 text-info border small" style="font-size: 0.7rem;">
+                                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border small" style="font-size: 0.7rem;">
                                                                     @track.Extended
                                                                 </span>
                                                             }
@@ -598,6 +605,97 @@
 </div>
 
 @section Scripts {
+    <style>
+        /* Hero Artist Link: High-contrast cyan on dark navy hero, glowing white on hover */
+        .hero-artist-link {
+            color: #67e8f9 !important;
+            padding: 0.15rem 0.55rem;
+            border-radius: 0.375rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(103, 232, 249, 0.25);
+            transition: all 0.2s ease;
+        }
+        .hero-artist-link:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            text-decoration: underline !important;
+        }
+
+        /* Hero Badges: Consistent pill dimensions, glass effect and high-contrast text */
+        .showcase-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.85rem;
+            font-size: 0.825rem;
+            font-weight: 500;
+            border-radius: 50rem;
+            background: rgba(255, 255, 255, 0.14);
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px);
+        }
+        .showcase-hero-badge.rating-badge {
+            background: rgba(254, 240, 138, 0.18);
+            color: #fef08a !important;
+            border: 1px solid rgba(250, 204, 21, 0.4);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Hero Action Buttons: Consistent pill buttons */
+        .showcase-toggle-btn {
+            border-color: rgba(255, 255, 255, 0.35) !important;
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+        .showcase-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.22) !important;
+            border-color: rgba(255, 255, 255, 0.7) !important;
+            color: #ffffff !important;
+        }
+        .showcase-toggle-btn.is-active {
+            background: #ffffff !important;
+            color: #1e1b4b !important;
+            border-color: #ffffff !important;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+        }
+        .hero-track-badge {
+            background: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            font-size: 0.75rem;
+        }
+        .showcase-toggle-btn.is-active .hero-track-badge {
+            background: #4f46e5 !important;
+            color: #ffffff !important;
+        }
+
+        /* Record Information Tabs: Uniform primary pill buttons */
+        .showcase-tab-btn {
+            font-weight: 500;
+            transition: all 0.2s ease;
+            padding: 0.4rem 0.95rem;
+        }
+        .showcase-tab-btn .info-track-badge {
+            background: rgba(79, 70, 229, 0.15);
+            color: var(--app-primary, #4f46e5);
+            font-size: 0.75rem;
+        }
+        .showcase-tab-btn.is-active {
+            background-color: var(--app-primary, #4f46e5) !important;
+            border-color: var(--app-primary, #4f46e5) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3) !important;
+        }
+        .showcase-tab-btn.is-active .info-track-badge {
+            background: rgba(255, 255, 255, 0.25) !important;
+            color: #ffffff !important;
+        }
+    </style>
+
     <script>
         let activeSection = null;
 
@@ -623,22 +721,19 @@
             // Show container
             displayArea.style.display = 'block';
 
-            // Reset button active styles
-            resetButtonStyles();
-
             // Show selected section and mark active buttons
             if (sectionName === 'artistBio') {
                 bioSec.style.display = 'block';
-                highlightButton('heroBtnBio', 'btn-info', 'btn-outline-light');
-                highlightButton('infoBtnBio', 'btn-primary', 'btn-outline-primary');
+                setHeroActive('heroBtnBio');
+                setInfoActive('infoBtnBio');
             } else if (sectionName === 'recordReview') {
                 reviewSec.style.display = 'block';
-                highlightButton('heroBtnReview', 'btn-warning', 'btn-outline-light');
-                highlightButton('infoBtnReview', 'btn-warning', 'btn-outline-warning');
+                setHeroActive('heroBtnReview');
+                setInfoActive('infoBtnReview');
             } else if (sectionName === 'trackListing') {
                 tracksSec.style.display = 'block';
-                highlightButton('heroBtnTracks', 'btn-primary', 'btn-outline-light');
-                highlightButton('infoBtnTracks', 'btn-info', 'btn-outline-info');
+                setHeroActive('heroBtnTracks');
+                setInfoActive('infoBtnTracks');
             }
 
             // Smooth scroll into view
@@ -657,32 +752,41 @@
             resetButtonStyles();
         }
 
-        function highlightButton(btnId, addClass, removeClass) {
-            const btn = document.getElementById(btnId);
-            if (btn) {
-                btn.classList.remove(removeClass);
-                btn.classList.add(addClass);
-            }
+        function setHeroActive(btnId) {
+            ['heroBtnBio', 'heroBtnReview', 'heroBtnTracks'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    if (id === btnId) {
+                        btn.classList.add('is-active');
+                    } else {
+                        btn.classList.remove('is-active');
+                    }
+                }
+            });
+        }
+
+        function setInfoActive(btnId) {
+            ['infoBtnBio', 'infoBtnReview', 'infoBtnTracks'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    if (id === btnId) {
+                        btn.classList.add('is-active');
+                    } else {
+                        btn.classList.remove('is-active');
+                    }
+                }
+            });
         }
 
         function resetButtonStyles() {
-            const heroBio = document.getElementById('heroBtnBio');
-            if (heroBio) { heroBio.className = 'btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn'; }
-
-            const heroReview = document.getElementById('heroBtnReview');
-            if (heroReview) { heroReview.className = 'btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn'; }
-
-            const heroTracks = document.getElementById('heroBtnTracks');
-            if (heroTracks) { heroTracks.className = 'btn btn-outline-light btn-sm px-3 shadow-sm rounded-pill showcase-toggle-btn'; }
-
-            const infoBio = document.getElementById('infoBtnBio');
-            if (infoBio) { infoBio.className = 'btn btn-outline-primary btn-sm showcase-tab-btn'; }
-
-            const infoReview = document.getElementById('infoBtnReview');
-            if (infoReview) { infoReview.className = 'btn btn-outline-warning btn-sm text-dark showcase-tab-btn'; }
-
-            const infoTracks = document.getElementById('infoBtnTracks');
-            if (infoTracks) { infoTracks.className = 'btn btn-outline-info btn-sm text-dark showcase-tab-btn'; }
+            ['heroBtnBio', 'heroBtnReview', 'heroBtnTracks'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('is-active');
+            });
+            ['infoBtnBio', 'infoBtnReview', 'infoBtnTracks'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('is-active');
+            });
         }
     </script>
 }
